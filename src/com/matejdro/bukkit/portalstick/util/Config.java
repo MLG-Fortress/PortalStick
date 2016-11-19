@@ -18,8 +18,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 
-import com.bergerkiller.bukkit.common.events.EntityAddEvent;
-import com.bergerkiller.bukkit.common.events.EntityRemoveEvent;
 import com.matejdro.bukkit.portalstick.Bridge;
 import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
@@ -189,15 +187,6 @@ public class Config {
 		}
         
         saveAll();
-		
-        EntityAddEvent eae;
-		for(World w: plugin.getServer().getWorlds())
-		  for(Chunk c: w.getLoadedChunks())
-			for(Entity e: c.getEntities())
-			{
-			  eae = new EntityAddEvent(e);
-			  plugin.eL.spawn(eae);
-			}
 	}
 	
 	private int getInt(String path, int def)
@@ -240,14 +229,8 @@ public class Config {
 	
 	public void unLoad()
 	{
-		EntityRemoveEvent ere;
 		for(World world: plugin.getServer().getWorlds())
 		  for(Chunk c: world.getLoadedChunks())
-			for(Entity e: c.getEntities())
-			{
-			  ere = new EntityRemoveEvent(e);
-			  plugin.eL.despawn(ere);
-			}
 		plugin.funnelBridgeManager.deleteAll();
 		for(Portal p: plugin.portalManager.portals.toArray(new Portal[0]))
 			p.delete();

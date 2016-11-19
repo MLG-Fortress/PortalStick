@@ -22,9 +22,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import com.bergerkiller.bukkit.common.events.EntityAddEvent;
-import com.bergerkiller.bukkit.common.events.EntityMoveEvent;
-import com.bergerkiller.bukkit.common.events.EntityRemoveEvent;
 import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
@@ -111,97 +108,5 @@ public class PortalStickEntityListener implements Listener {
 				}
 			}
 		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void spawn(EntityAddEvent event)
-	{
-	  Entity entity = event.getEntity();
-	  if(plugin.config.DisabledWorlds.contains(entity.getLocation().getWorld().getName()))
-		return;
-//	  System.out.print("Spawned: "+entity.getType());
-	  plugin.userManager.createUser(entity);
-	  User user = plugin.userManager.getUser(entity);
-	  Region region = plugin.regionManager.getRegion(new V10Location(entity.getLocation()));
-	  if(entity instanceof InventoryHolder && !region.name.equals("global") && region.getBoolean(RegionSetting.UNIQUE_INVENTORY))
-		user.saveInventory((InventoryHolder)entity);
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void despawn(EntityRemoveEvent event)
-	{
-	  Entity entity = event.getEntity();
-	  if(plugin.config.DisabledWorlds.contains(entity.getLocation().getWorld().getName()))
-		return;
-	  
-	  if(plugin.gelManager.flyingGels.containsKey(entity.getUniqueId()))
-	  {
-		V10Location from = plugin.gelManager.flyingGels.get(entity.getUniqueId());
-		Location loc = entity.getLocation();
-		V10Location vloc = new V10Location(loc);
-//		if(b.getTypeId() == mat && b.getData() == data)
-//		if(!plugin.grillManager.insideBlocks.containsKey(vloc))
-//		  b.setType(Material.AIR);
-		ArrayList<BlockHolder> blocks;
-		if(plugin.gelManager.gels.containsKey(from))
-		  blocks = plugin.gelManager.gels.get(from);
-		else
-		{
-		  blocks = new ArrayList<BlockHolder>();
-		  plugin.gelManager.gels.put(from, blocks);
-		}
-		Block b = loc.getBlock();
-		FallingBlock fb = (FallingBlock)entity;
-		int mat = fb.getBlockId();
-		byte data = fb.getBlockData();
-		BlockHolder bh;
-		Block b2;
-		for(BlockFace face: new BlockFace[] {BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP})
-		{
-		  b2 = b.getRelative(face);
-		  if(b2.getType() != Material.AIR && !b2.isLiquid())
-		  {
-			vloc = new V10Location(b2);
-			if(plugin.portalManager.borderBlocks.containsKey(vloc) ||
-					plugin.portalManager.insideBlocks.containsKey(vloc) ||
-					plugin.portalManager.behindBlocks.containsKey(vloc) ||
-					plugin.grillManager.borderBlocks.containsKey(vloc) ||
-					plugin.grillManager.insideBlocks.containsKey(vloc) ||
-					plugin.funnelBridgeManager.bridgeBlocks.containsKey(vloc) ||
-					plugin.funnelBridgeManager.bridgeMachineBlocks.containsKey(vloc))
-			  continue;
-			bh = new BlockHolder(b2);
-			if(!blocks.contains(bh))
-			{
-			  if(plugin.gelManager.gelMap.containsKey(bh))
-				bh = plugin.gelManager.gelMap.get(bh);
-			  else
-				plugin.gelManager.gelMap.put(bh, bh);
-			  blocks.add(bh);
-			  b2.setTypeIdAndData(mat, data, true);
-			}
-		  }
-		}
-	  }
-	  
-	  User user = plugin.userManager.getUser(entity);
-//	  System.out.print("Despawned: "+entity.getType());
-	  
-	  Region region = plugin.regionManager.getRegion(new V10Location(entity.getLocation()));
-	  if(entity instanceof InventoryHolder && region.name != "global" && region.getBoolean(RegionSetting.UNIQUE_INVENTORY))
-		user.revertInventory((InventoryHolder)entity);
-	  plugin.userManager.deleteUser(user);
-	  if(entity instanceof Player) //TODO
-		plugin.gelManager.resetPlayer((Player)entity);
-	}
-	
-	@EventHandler
-	public void entityMove(EntityMoveEvent event)
-	{
-	  Entity entity = event.getEntity();
-	  if(entity instanceof Player || (entity instanceof Vehicle && !(entity instanceof Pig)))
-		return;
-	  World world = entity.getWorld();
-	  plugin.entityManager.onEntityMove(entity, new Location(world, event.getFromX(), event.getFromY(), event.getFromZ(), event.getFromYaw(), event.getFromPitch()), new Location(world, event.getToX(), event.getToY(), event.getToZ(), event.getToYaw(), event.getToPitch()), true);
 	}
 }

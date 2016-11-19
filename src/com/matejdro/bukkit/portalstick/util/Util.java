@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spoutapi.SpoutManager;
 
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
@@ -123,7 +122,7 @@ public class Util {
       {
     	String url = plugin.config.soundUrls[sound.ordinal()];
     	if(url != null && url.length() > 4 && url.length() < 257)
-    	  SpoutManager.getSoundManager().playGlobalCustomSoundEffect(plugin, url, false, loc.getHandle(), plugin.config.soundRange);
+		{}
     	else
     	{
     	  plugin.config.useSpoutSounds = false;
