@@ -6,7 +6,7 @@
 
     <groupId>com.matejdro.bukkit</groupId>
     <artifactId>portalstick</artifactId>
-    <version>15.0</version>
+    <version>4.1</version>
     <repositories>
         <repository>
             <id>spigot-repo</id>
