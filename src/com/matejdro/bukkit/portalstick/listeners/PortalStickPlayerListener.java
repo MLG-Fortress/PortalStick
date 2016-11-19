@@ -3,6 +3,7 @@ package com.matejdro.bukkit.portalstick.listeners;
 import java.util.HashSet;
 import java.util.List;
 
+import com.matejdro.bukkit.portalstick.PortalManager;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,8 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.matejdro.bukkit.portalstick.Portal;
@@ -185,6 +188,18 @@ public class PortalStickPlayerListener implements Listener {
 	  Location to = plugin.entityManager.onEntityMove(event.getPlayer(), event.getFrom(), event.getTo(), false);
 	  if(to != null)
 		event.setTo(to);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	void onPlayerJoin(PlayerJoinEvent event)
+	{
+		plugin.userManager.createUser(event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	void onPlayerQuit(PlayerQuitEvent event)
+	{
+		plugin.userManager.deleteUser(event.getPlayer());
 	}
 	
 	@EventHandler()
