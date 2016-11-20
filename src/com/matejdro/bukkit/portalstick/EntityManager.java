@@ -151,25 +151,24 @@ public class EntityManager implements Runnable {
 		switch(portal.teleportFace)
 	       {
 	       	case NORTH:
-	       		momentum = vector.getX();
+	       		momentum = vector.getZ();
 	       		break;
 	       	case EAST:
 	       		yaw -= 90;
-	       		momentum = vector.getZ();
+	       		momentum = vector.getX();
 	       		break;
 	       	case SOUTH:
 	       		yaw -= 180;
-	       		momentum = vector.getX();
+	       		momentum = vector.getZ();
 	       		break;
 	       	case WEST:
 	       		yaw -= 270;
-	       		momentum = vector.getZ();
+	       		momentum = vector.getX();
 	       		break;
 	       	case DOWN:
 	       	case UP:
 	       		momentum = vector.getY();
-	       		yaw = pitch;
-	       		pitch = 0;
+	       		pitch -= 90;
 	       		break;
 	       }
 			
