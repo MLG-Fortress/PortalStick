@@ -180,20 +180,20 @@ public class EntityManager implements Runnable {
 		switch(destination.teleportFace)
         {
         	case NORTH:
-        		yaw += 180;
-        		outvector = outvector.setX(momentum);
+        		yaw += 90;
+        		outvector = outvector.setZ(momentum);
         		break;
         	case EAST:
         		yaw += 270;
-        		outvector = outvector.setZ(momentum);
+        		outvector = outvector.setX(momentum);
         		break;
         	case SOUTH:
         		yaw += 360;
-        		outvector = outvector.setX(-momentum);
+        		outvector = outvector.setZ(-momentum);
         		break;
         	case WEST:
         		yaw += 450;
-        		outvector = outvector.setZ(-momentum);
+        		outvector = outvector.setX(-momentum);
         		break;
         	case DOWN:
         		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)

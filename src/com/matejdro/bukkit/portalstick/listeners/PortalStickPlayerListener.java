@@ -180,7 +180,7 @@ public class PortalStickPlayerListener implements Listener {
 
 	}
  	    
-	@EventHandler(ignoreCancelled = false)
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
 	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))

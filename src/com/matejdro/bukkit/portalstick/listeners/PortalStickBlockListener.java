@@ -270,7 +270,7 @@ public class PortalStickBlockListener implements Listener
 		  event.setCancelled(true);
 	}
 	
-	@EventHandler()
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockFromTo(BlockFromToEvent event) {
 		Block from = event.getBlock();
 		V10Location loc = new V10Location(from);
@@ -359,7 +359,7 @@ public class PortalStickBlockListener implements Listener
 				}
 			}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void infiniteDispenser(BlockDispenseEvent event)
 	{
 	  if(plugin.config.DisabledWorlds.contains(event.getBlock().getLocation().getWorld().getName()))
