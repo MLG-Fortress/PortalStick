@@ -180,19 +180,18 @@ public class EntityManager implements Runnable {
 		switch(destination.teleportFace)
         {
         	case NORTH:
-        		yaw += 90;
         		outvector = outvector.setZ(momentum);
         		break;
         	case EAST:
-        		yaw += 270;
+        		yaw += 90;
         		outvector = outvector.setX(momentum);
         		break;
         	case SOUTH:
-        		yaw += 360;
+        		yaw += 180;
         		outvector = outvector.setZ(-momentum);
         		break;
         	case WEST:
-        		yaw += 450;
+        		yaw += 270;
         		outvector = outvector.setX(-momentum);
         		break;
         	case DOWN:
