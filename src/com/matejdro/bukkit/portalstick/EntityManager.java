@@ -148,6 +148,7 @@ public class EntityManager implements Runnable {
 		float yaw = entity.getLocation().getYaw();
 		float pitch = entity.getLocation().getPitch();
 		final float startyaw = yaw;
+		final float startpitch = pitch; //Just to make it easier to read what's going on
 		double momentum = 0.0;
 		switch(portal.teleportFace)
 	       {
@@ -184,8 +185,6 @@ public class EntityManager implements Runnable {
 	       		break;
 	       }
 
-
-
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
@@ -220,10 +219,10 @@ public class EntityManager implements Runnable {
 						break;
 					case DOWN:
 						yaw = startyaw + 180; //Not really possible to determine yaw due to no orientation, so we'll just use same assumptions as before.
-						pitch = -pitch;
+						pitch = -startpitch;
 						break;
 					default:
-						pitch -= 90;
+						pitch = startpitch;
 				}
         		outvector = outvector.setY(momentum);
         		break;
@@ -236,10 +235,10 @@ public class EntityManager implements Runnable {
 						break;
 					case UP:
 						yaw = startyaw + 180;
-						pitch = -pitch;
+						pitch = -startpitch;
 						break;
 					default:
-						pitch += 90;
+						pitch = startpitch;
 				}
         		outvector = outvector.setY(-momentum);
         		break;
