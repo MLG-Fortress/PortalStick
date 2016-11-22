@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -180,6 +181,7 @@ public class EntityManager implements Runnable {
 		{
 			yaw = 180 - yaw;
 			pitch = -180 - pitch;
+			Bukkit.broadcastMessage("Flipped");
 		}
 
 		momentum = Math.abs(momentum);
