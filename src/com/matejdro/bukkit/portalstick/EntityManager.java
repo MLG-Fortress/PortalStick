@@ -179,7 +179,7 @@ public class EntityManager implements Runnable {
 		if (Math.abs(pitch) > 90) //90 for testing TODO: positive pitch values probably work differently
 		{
 			yaw = yaw - 180;
-			pitch = -90 - pitch;
+			pitch = -180 - pitch;
 		}
 
 		momentum = Math.abs(momentum);
