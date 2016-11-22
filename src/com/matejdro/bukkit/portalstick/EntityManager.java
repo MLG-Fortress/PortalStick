@@ -165,11 +165,11 @@ public class EntityManager implements Runnable {
 	       		yaw -= 270;
 	       		momentum = vector.getX();
 	       		break;
-	       	case DOWN:
+	       	case UP:
 				momentum = vector.getY();
 				pitch += 90;
 				break;
-	       	case UP:
+	       	case DOWN:
 	       		momentum = vector.getY();
 				pitch -= 90;
 	       		break;
@@ -181,7 +181,7 @@ public class EntityManager implements Runnable {
 			yaw = yaw - 180;
 			pitch = -90 - pitch;
 		}
-		
+
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
@@ -247,7 +247,6 @@ public class EntityManager implements Runnable {
 		}
 		
 		entity.setFallDistance(0);
-
 		teleport.setPitch(pitch);
 		teleport.setYaw(yaw);
 		
