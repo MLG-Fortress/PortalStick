@@ -187,7 +187,7 @@ public class EntityManager implements Runnable {
 		//if pitch exceeds |120|, rotate yaw accordingly
 		if (Math.abs(pitch) > 90) //90 for testing TODO: positive pitch values probably work differently
 		{
-			//yaw = 180 - yaw; //Not possible to determine yaw, since ground/ceiling portals do NOT have an orientation!
+			yaw = 180 - yaw;
 			pitch = -180 - pitch;
 			Bukkit.broadcastMessage("Flipped");
 		}
