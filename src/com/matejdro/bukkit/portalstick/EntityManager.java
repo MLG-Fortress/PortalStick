@@ -216,6 +216,7 @@ public class EntityManager implements Runnable {
 				{
 					case UP:
 						yaw = startyaw;
+						pitch = startpitch;
 						break;
 					case DOWN:
 						yaw = startyaw + 180; //Not really possible to determine yaw due to no orientation, so we'll just use same assumptions as before.
@@ -232,6 +233,7 @@ public class EntityManager implements Runnable {
 				{
 					case DOWN:
 						yaw = startyaw;
+						pitch = startpitch;
 						break;
 					case UP:
 						yaw = startyaw + 180;
