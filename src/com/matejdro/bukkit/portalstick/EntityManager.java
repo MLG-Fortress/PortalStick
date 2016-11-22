@@ -154,25 +154,31 @@ public class EntityManager implements Runnable {
 	       	case NORTH:
 				yaw -= 180;
 	       		momentum = vector.getZ();
+				Bukkit.broadcastMessage("North enter");
 	       		break;
 	       	case EAST:
 	       		yaw -= 270;
 	       		momentum = vector.getX();
+				Bukkit.broadcastMessage("East enter");
 	       		break;
 	       	case SOUTH:
 	       		momentum = vector.getZ();
+				Bukkit.broadcastMessage("South enter");
 	       		break;
 	       	case WEST:
 	       		yaw -= 90;
 	       		momentum = vector.getX();
+				Bukkit.broadcastMessage("West enter");
 	       		break;
 	       	case UP:
 				momentum = vector.getY();
 				pitch += 90;
+				Bukkit.broadcastMessage("Up enter");
 				break;
 	       	case DOWN:
 	       		momentum = vector.getY();
 				pitch -= 90;
+				Bukkit.broadcastMessage("Down enter");
 	       		break;
 	       }
 
@@ -192,18 +198,22 @@ public class EntityManager implements Runnable {
         {
         	case NORTH:
         		outvector = outvector.setZ(momentum);
+				Bukkit.broadcastMessage("North exit");
         		break;
         	case EAST:
         		yaw += 90;
         		outvector = outvector.setX(-momentum);
+				Bukkit.broadcastMessage("East exit");
         		break;
         	case SOUTH:
         		yaw += 180;
         		outvector = outvector.setZ(-momentum);
+				Bukkit.broadcastMessage("South exit");
         		break;
         	case WEST:
         		yaw += 270;
         		outvector = outvector.setX(momentum);
+				Bukkit.broadcastMessage("West exit");
         		break;
         	case DOWN:
         		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)
