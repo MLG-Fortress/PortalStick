@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -146,32 +147,44 @@ public class EntityManager implements Runnable {
 							 
 		float yaw = entity.getLocation().getYaw();
 		float pitch = entity.getLocation().getPitch();
-		float startyaw = yaw;
+		final float startyaw = yaw;
+		final float startpitch = pitch; //Just to make it easier to read what's going on
 		double momentum = 0.0;
 		switch(portal.teleportFace)
 	       {
 	       	case NORTH:
+				yaw -= 180;
 	       		momentum = vector.getZ();
+				Bukkit.broadcastMessage("North enter");
 	       		break;
 	       	case EAST:
-	       		yaw -= 90;
-	       		momentum = vector.getX();
-	       		break;
-	       	case SOUTH:
-	       		yaw -= 180;
-	       		momentum = vector.getZ();
-	       		break;
-	       	case WEST:
 	       		yaw -= 270;
 	       		momentum = vector.getX();
+				Bukkit.broadcastMessage("East enter");
 	       		break;
-	       	case DOWN:
+	       	case SOUTH:
+	       		momentum = vector.getZ();
+				Bukkit.broadcastMessage("South enter");
+	       		break;
+	       	case WEST:
+	       		yaw -= 90;
+	       		momentum = vector.getX();
+				Bukkit.broadcastMessage("West enter");
+	       		break;
 	       	case UP:
+				momentum = vector.getY();
+				pitch += 90;
+				yaw = 0; //Not possible to determine yaw, since ground/ceiling portals do NOT have an orientation!
+				Bukkit.broadcastMessage("Up enter");
+				break;
+	       	case DOWN:
 	       		momentum = vector.getY();
-	       		pitch -= 90;
+				pitch -= 90;
+				yaw = 0;
+				Bukkit.broadcastMessage("Down enter");
 	       		break;
 	       }
-			
+
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
@@ -180,46 +193,66 @@ public class EntityManager implements Runnable {
         {
         	case NORTH:
         		outvector = outvector.setZ(momentum);
+				Bukkit.broadcastMessage("North exit");
         		break;
         	case EAST:
         		yaw += 90;
-        		outvector = outvector.setX(momentum);
+        		outvector = outvector.setX(-momentum);
+				Bukkit.broadcastMessage("East exit");
         		break;
         	case SOUTH:
         		yaw += 180;
         		outvector = outvector.setZ(-momentum);
+				Bukkit.broadcastMessage("South exit");
         		break;
         	case WEST:
         		yaw += 270;
-        		outvector = outvector.setX(-momentum);
+        		outvector = outvector.setX(momentum);
+				Bukkit.broadcastMessage("West exit");
         		break;
         	case DOWN:
-        		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)
-        		{
-        			yaw = pitch;
-	        		pitch = startyaw;
-        		}
-        		else
-        		{
-        			pitch = yaw;
-        			yaw = startyaw;
-        		}
+				Bukkit.broadcastMessage("Down exit");
+				switch (portal.teleportFace)
+				{
+					case UP:
+						yaw = startyaw;
+						pitch = startpitch;
+						break;
+					case DOWN:
+						yaw = startyaw + 180; //Not really possible to determine yaw due to no orientation, so we'll just use same assumptions as before.
+						pitch = -startpitch;
+						break;
+					default:
+						pitch = startpitch;
+				}
         		outvector = outvector.setY(momentum);
         		break;
         	case UP:
-        		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)
-        		{
-        			yaw = pitch;
-	        		pitch = startyaw + 180;
-        		}
-        		else
-        		{
-        			pitch = yaw;
-        			yaw = startyaw;
-        		}
+				Bukkit.broadcastMessage("Up exit");
+        		switch (portal.teleportFace)
+				{
+					case DOWN:
+						yaw = startyaw;
+						pitch = startpitch;
+						break;
+					case UP:
+						yaw = startyaw + 180;
+						pitch = -startpitch;
+						break;
+					default:
+						pitch = startpitch;
+				}
         		outvector = outvector.setY(-momentum);
         		break;
         }
+
+		//if pitch exceeds |120|, rotate yaw accordingly
+		if (Math.abs(pitch) > 120) //TODO: positive pitch values probably work differently
+		{
+			yaw = 180 - yaw;
+			pitch = -180 - pitch;
+			Bukkit.broadcastMessage("Flipped");
+		}
 		
 		if (!(entity instanceof Player) && !(entity instanceof Chicken) && !(entity instanceof Bat) && (portal.teleportFace == BlockFace.UP || portal.teleportFace == BlockFace.DOWN) && (destination.teleportFace == BlockFace.UP || destination.teleportFace == BlockFace.DOWN) && plugin.rand.nextInt(100) < 5)
 		{
@@ -237,7 +270,6 @@ public class EntityManager implements Runnable {
 		}
 		
 		entity.setFallDistance(0);
-		
 		teleport.setPitch(pitch);
 		teleport.setYaw(yaw);
 		
