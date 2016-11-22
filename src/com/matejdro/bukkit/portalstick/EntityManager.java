@@ -213,20 +213,7 @@ public class EntityManager implements Runnable {
         		break;
         	case DOWN:
 				Bukkit.broadcastMessage("Down exit");
-        		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)
-        		{
-        			yaw = pitch; //Doesn't really matter due to no orientation
-	        		pitch = pitch + 90;
-        		}
-        		else
-        		{
-        			yaw = startyaw;
-        		}
-        		outvector = outvector.setY(momentum);
-        		break;
-        	case UP:
-				Bukkit.broadcastMessage("Up exit");
-        		switch (portal.teleportFace)
+				switch (portal.teleportFace)
 				{
 					case UP:
 						yaw = startyaw;
@@ -237,6 +224,22 @@ public class EntityManager implements Runnable {
 						break;
 					default:
 						pitch -= 90;
+				}
+        		outvector = outvector.setY(momentum);
+        		break;
+        	case UP:
+				Bukkit.broadcastMessage("Up exit");
+        		switch (portal.teleportFace)
+				{
+					case DOWN:
+						yaw = startyaw;
+						break;
+					case UP:
+						yaw = startyaw + 180;
+						pitch = -pitch;
+						break;
+					default:
+						pitch += 90;
 				}
         		outvector = outvector.setY(-momentum);
         		break;
