@@ -193,7 +193,7 @@ public class EntityManager implements Runnable {
         		break;
         	case EAST:
         		yaw += 90;
-        		outvector = outvector.setX(momentum);
+        		outvector = outvector.setX(-momentum);
         		break;
         	case SOUTH:
         		yaw += 180;
@@ -201,7 +201,7 @@ public class EntityManager implements Runnable {
         		break;
         	case WEST:
         		yaw += 270;
-        		outvector = outvector.setX(-momentum);
+        		outvector = outvector.setX(momentum);
         		break;
         	case DOWN:
         		if (portal.teleportFace != BlockFace.UP && portal.teleportFace != BlockFace.DOWN)
