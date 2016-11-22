@@ -173,11 +173,13 @@ public class EntityManager implements Runnable {
 	       	case UP:
 				momentum = vector.getY();
 				pitch += 90;
+				yaw = 0; //Not possible to determine yaw, since ground/ceiling portals do NOT have an orientation!
 				Bukkit.broadcastMessage("Up enter");
 				break;
 	       	case DOWN:
 	       		momentum = vector.getY();
 				pitch -= 90;
+				yaw = 0;
 				Bukkit.broadcastMessage("Down enter");
 	       		break;
 	       }
@@ -185,7 +187,7 @@ public class EntityManager implements Runnable {
 		//if pitch exceeds |120|, rotate yaw accordingly
 		if (Math.abs(pitch) > 90) //90 for testing TODO: positive pitch values probably work differently
 		{
-			yaw = 180 - yaw;
+			//yaw = 180 - yaw; //Not possible to determine yaw, since ground/ceiling portals do NOT have an orientation!
 			pitch = -180 - pitch;
 			Bukkit.broadcastMessage("Flipped");
 		}
