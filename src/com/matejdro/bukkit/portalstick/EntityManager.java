@@ -178,7 +178,7 @@ public class EntityManager implements Runnable {
 		//if pitch exceeds |120|, rotate yaw accordingly
 		if (Math.abs(pitch) > 90) //90 for testing TODO: positive pitch values probably work differently
 		{
-			yaw = yaw - 180;
+			yaw = 180 - yaw;
 			pitch = -180 - pitch;
 		}
 
