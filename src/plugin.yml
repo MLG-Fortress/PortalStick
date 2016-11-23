@@ -1,6 +1,6 @@
 name: PortalStick
 main: com.matejdro.bukkit.portalstick.PortalStick
-version: 4.0-beta1
+version: ${project.version}
 authors: [matejdro, oliverw92, V10lator]
 softdepend: [WorldGuard]
 commands:
