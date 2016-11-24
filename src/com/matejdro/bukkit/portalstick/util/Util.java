@@ -21,6 +21,8 @@ public class Util {
 	}
 	
 	public void sendMessage(CommandSender player, String msg) {
+		if (msg == null || msg.isEmpty())
+			return;
 		int i;
 		String part;
 		ChatColor lastColor = ChatColor.RESET;
