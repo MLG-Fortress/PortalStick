@@ -219,7 +219,8 @@ public class EntityManager implements Runnable {
 						pitch = startpitch;
 						break;
 					case DOWN:
-						yaw = startyaw + 180; //Not really possible to determine yaw due to no orientation, so we'll just use same assumptions as before.
+						//yaw = startyaw + 180; //Not really possible to determine yaw due to no orientation, so we'll just use same assumptions as before.
+						yaw = startyaw; //Flipping client's yaw can cause client side lag(?) (Possibly because it needs to render what was previously not visible? Testing with low render distance seems to alleviate this lag, so answer is probably yes)
 						pitch = -startpitch;
 						break;
 					default:
@@ -236,7 +237,8 @@ public class EntityManager implements Runnable {
 						pitch = startpitch;
 						break;
 					case UP:
-						yaw = startyaw + 180;
+						//yaw = startyaw + 180;
+						yaw = startyaw;
 						pitch = -startpitch;
 						break;
 					default:
