@@ -4,13 +4,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.block.Action;
 
 import java.util.List;
 
 /**
  * Created by RoboMWM on 11/23/2016.
  */
-public class PortalGunShootEvent extends Event
+public class PlayerPortalGunShootEvent extends Event
 {
     // Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();
@@ -25,11 +26,14 @@ public class PortalGunShootEvent extends Event
     private Player player;
     private List<Block> blocksInLineOfSight;
     private boolean cancelled = false;
+    private Action action;
 
-    public PortalGunShootEvent(Player player, List<Block> targetBlocks)
+
+    public PlayerPortalGunShootEvent(Player player, List<Block> targetBlocks, Action action)
     {
         this.player = player;
         this.blocksInLineOfSight = targetBlocks;
+        this.action = action;
     }
 
     public boolean isCancelled()
@@ -49,7 +53,12 @@ public class PortalGunShootEvent extends Event
 
     public Player getPlayer()
     {
-        return player;
+        return this.player;
+    }
+
+    public Action getAction()
+    {
+        return this.action;
     }
 
 }

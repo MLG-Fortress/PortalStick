@@ -6,7 +6,7 @@
 
     <groupId>com.matejdro.bukkit</groupId>
     <artifactId>portalstick</artifactId>
-    <version>5.3</version>
+    <version>5.4</version>
     <properties>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>

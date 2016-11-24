@@ -3,8 +3,7 @@ package com.matejdro.bukkit.portalstick.listeners;
 import java.util.HashSet;
 import java.util.List;
 
-import com.matejdro.bukkit.portalstick.PortalManager;
-import com.matejdro.bukkit.portalstick.events.PortalGunShootEvent;
+import com.matejdro.bukkit.portalstick.events.PlayerPortalGunShootEvent;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -99,7 +98,7 @@ public class PortalStickPlayerListener implements Listener {
 			if (targetBlocks.size() < 1 || !region.getBoolean(RegionSetting.ENABLE_PORTALS))
 				return;
 
-			PortalGunShootEvent shootEvent = new PortalGunShootEvent(event.getPlayer(), targetBlocks);
+			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(event.getPlayer(), targetBlocks, event.getAction());
 			plugin.getServer().getPluginManager().callEvent(shootEvent);
 			if (shootEvent.isCancelled())
 				return; //TODO: add more methods to determine whether to play "can't create" sound or not
