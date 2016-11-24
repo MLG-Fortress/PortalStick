@@ -51,7 +51,7 @@ public class PortalStickPlayerListener implements Listener {
 		//Portal tool
 		//RoboMWM: account for 1.9 offhand changes
 
-		ItemStack itemInHand = null;
+		ItemStack itemInHand;
 		boolean mainHand = true;
 
 		switch (event.getHand())
@@ -61,7 +61,7 @@ public class PortalStickPlayerListener implements Listener {
 				break;
 			case OFF_HAND: //Don't do anything if the player is holding a portal gun in both hands
 				itemInHand = player.getInventory().getItemInOffHand();
-				if (itemInHand.getType().equals(player.getInventory().getItemInMainHand().getType())) //or just anything that's similar, doesn't really matter for my purposes as of yet.
+				if (itemInHand.getType() == player.getInventory().getItemInMainHand().getType()) //or just anything that's similar, doesn't really matter for my purposes as of yet.
 					return;
 				mainHand = false;
 				break;
@@ -69,9 +69,7 @@ public class PortalStickPlayerListener implements Listener {
 				return;
 		}
 
-
-		if (itemInHand.getTypeId() == plugin.config.PortalTool && itemInHand.getDurability() == plugin.config.portalToolData)
-		if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
+		if (itemInHand.getTypeId() == plugin.config.PortalTool && itemInHand.getDurability() == plugin.config.portalToolData && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
@@ -178,7 +176,7 @@ public class PortalStickPlayerListener implements Listener {
 //				event.setCancelled(true);
 //		}
 		//Color changing
-		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getTypeId() == 0 && event.getClickedBlock().getType() == Material.WOOL)
+		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getType() == Material.AIR && event.getClickedBlock().getType() == Material.WOOL)
 		{
 			V10Location loc = new V10Location(event.getClickedBlock());
 			Portal portal = plugin.portalManager.borderBlocks.get(loc);
