@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.matejdro.bukkit.portalstick.PortalManager;
+import com.matejdro.bukkit.portalstick.events.PortalGunShootEvent;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,7 +72,6 @@ public class PortalStickPlayerListener implements Listener {
 
 
 		if (itemInHand.getTypeId() == plugin.config.PortalTool && itemInHand.getDurability() == plugin.config.portalToolData)
-
 		if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -98,6 +98,11 @@ public class PortalStickPlayerListener implements Listener {
 			List<Block> targetBlocks = event.getPlayer().getLineOfSight(tb, 120);
 			if (targetBlocks.size() < 1 || !region.getBoolean(RegionSetting.ENABLE_PORTALS))
 				return;
+
+			PortalGunShootEvent shootEvent = new PortalGunShootEvent(event.getPlayer(), targetBlocks);
+			plugin.getServer().getPluginManager().callEvent(shootEvent);
+			if (shootEvent.isCancelled())
+				return; //TODO: add more methods to determine whether to play "can't create" sound or not
 			
 			V10Location loc;
 			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_THROUGH_PORTAL))
