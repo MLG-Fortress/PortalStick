@@ -49,7 +49,30 @@ public class PortalStickPlayerListener implements Listener {
 		User user = plugin.userManager.getUser(player);
 	
 		//Portal tool
-		if (player.getItemInHand().getTypeId() == plugin.config.PortalTool && player.getItemInHand().getDurability() == plugin.config.portalToolData && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
+		//RoboMWM: account for 1.9 offhand changes
+
+		ItemStack itemInHand = null;
+		boolean mainHand = true;
+
+		switch (event.getHand())
+		{
+			case HAND:
+				itemInHand = player.getInventory().getItemInMainHand();
+				break;
+			case OFF_HAND: //Don't do anything if the player is holding a portal gun in both hands
+				itemInHand = player.getInventory().getItemInOffHand();
+				if (itemInHand.getType().equals(player.getInventory().getItemInMainHand().getType())) //or just anything that's similar, doesn't really matter for my purposes as of yet.
+					return;
+				mainHand = false;
+				break;
+			default:
+				return;
+		}
+
+
+		if (itemInHand.getTypeId() == plugin.config.PortalTool && itemInHand.getDurability() == plugin.config.portalToolData)
+
+		if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
 		{
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
@@ -131,29 +154,27 @@ public class PortalStickPlayerListener implements Listener {
 				plugin.portalManager.placePortal(new V10Location(event.getClickedBlock()), event.getBlockFace(), event.getPlayer(), orange, true);
 		}
 		//Region tool
-		else if (user.usingTool && player.getItemInHand().getTypeId() == plugin.config.RegionTool)
-		{
-			switch (event.getAction()) {
-				case RIGHT_CLICK_BLOCK:
-					user.pointTwo = new V10Location(event.getClickedBlock());
-					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
-					break;
-				case LEFT_CLICK_BLOCK:
-					user.pointOne = new V10Location(event.getClickedBlock());
-					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
-			}
-		}
+//		else if (user.usingTool && itemInHand.getTypeId() == plugin.config.RegionTool)
+//		{
+//			switch (event.getAction()) {
+//				case RIGHT_CLICK_BLOCK:
+//					user.pointTwo = new V10Location(event.getClickedBlock());
+//					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
+//					break;
+//				case LEFT_CLICK_BLOCK:
+//					user.pointOne = new V10Location(event.getClickedBlock());
+//					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
+//			}
+//		}
 		//Flint and steel
-		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getItemInHand().getType() == Material.FLINT_AND_STEEL) {
-		{
-			V10Location loc = new V10Location(event.getClickedBlock());
-			if (plugin.grillManager.createGrill(player, loc) || plugin.funnelBridgeManager.placeGlassBridge(player, loc)) 
-				event.setCancelled(true);
-		}
-			
-		}
+//		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getItemInHand().getType() == Material.FLINT_AND_STEEL)
+//		{
+//			V10Location loc = new V10Location(event.getClickedBlock());
+//			if (plugin.grillManager.createGrill(player, loc) || plugin.funnelBridgeManager.placeGlassBridge(player, loc))
+//				event.setCancelled(true);
+//		}
 		//Color changing
-		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getItemInHand().getTypeId() == 0 && event.getClickedBlock().getType() == Material.WOOL)
+		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getTypeId() == 0 && event.getClickedBlock().getType() == Material.WOOL)
 		{
 			V10Location loc = new V10Location(event.getClickedBlock());
 			Portal portal = plugin.portalManager.borderBlocks.get(loc);

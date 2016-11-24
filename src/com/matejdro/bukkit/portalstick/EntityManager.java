@@ -310,7 +310,8 @@ public class EntityManager implements Runnable {
 		double d = locTo.getBlockY();
 		if(d > locTo.getWorld().getMaxHeight() - 1 || d < 0)
 		  return null;
-		
+
+		//TODO: may need to check world/try-catch?
 		Vector vec2 = locTo.toVector();
 		V10Location vlocTo = new V10Location(locTo);
 		Location oloc = locTo;
