@@ -251,7 +251,7 @@ public class EntityManager implements Runnable {
 		//if pitch exceeds |120|, rotate yaw accordingly
 		if (Math.abs(pitch) > 120) //TODO: positive pitch values probably work differently
 		{
-			yaw = 180 - yaw;
+			yaw = yaw - 180;
 			pitch = -180 - pitch;
 			//Bukkit.broadcastMessage("Flipped");
 		}
