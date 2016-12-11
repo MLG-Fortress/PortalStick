@@ -54,6 +54,12 @@ public class PortalStickPlayerListener implements Listener {
 		ItemStack itemInHand;
 		boolean mainHand = true;
 
+		if (event.getHand() == null)
+		{
+			plugin.getLogger().info("Uh somehow event#gethand was null");
+			return;
+		}
+
 		switch (event.getHand())
 		{
 			case HAND:
