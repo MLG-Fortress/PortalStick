@@ -97,16 +97,16 @@ public class PortalStickEntityListener implements Listener {
 					}
 				}
 			}
-			else if (plugin.blockUtil.compareBlockToString(block, region.getString(RegionSetting.GRILL_MATERIAL)))
-			{
-				Grill grill = plugin.grillManager.insideBlocks.get(loc);
-				if (grill == null) grill = plugin.grillManager.borderBlocks.get(loc);
-				if (grill != null )
-				{
-					event.setCancelled(true);
-					return;
-				}
-			}
+//			else if (plugin.blockUtil.compareBlockToString(block, region.getString(RegionSetting.GRILL_MATERIAL)))
+//			{
+//				Grill grill = plugin.grillManager.insideBlocks.get(loc);
+//				if (grill == null) grill = plugin.grillManager.borderBlocks.get(loc);
+//				if (grill != null )
+//				{
+//					event.setCancelled(true);
+//					return;
+//				}
+//			} //RoboMWM: I don't care about grills (xddddd)
 		}
 	}
 }
