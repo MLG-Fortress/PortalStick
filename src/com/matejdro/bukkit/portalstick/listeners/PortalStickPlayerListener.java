@@ -158,7 +158,7 @@ public class PortalStickPlayerListener implements Listener {
 			boolean orange = false;
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
 				orange = true;
-			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || tb.contains((byte) event.getClickedBlock().getTypeId()))
+			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || transparentMaterials.contains(event.getClickedBlock().getType()))
 			{
 				Block b = targetBlocks.get(targetBlocks.size() - 1);
 				loc = new V10Location(b);
