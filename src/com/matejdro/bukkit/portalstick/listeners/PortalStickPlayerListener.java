@@ -1,7 +1,9 @@
 package com.matejdro.bukkit.portalstick.listeners;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.matejdro.bukkit.portalstick.events.PlayerPortalGunShootEvent;
 import org.bukkit.DyeColor;
@@ -54,7 +56,7 @@ public class PortalStickPlayerListener implements Listener {
 		ItemStack itemInHand;
 		boolean mainHand = true;
 
-		if (event.getHand() == null)
+		if (event.getHand() == null) //I'm still not sure why this happens... Probably a plugin sending a fake interact event??
 		{
 			plugin.getLogger().info("Uh somehow event#gethand was null");
 			return;
@@ -65,7 +67,7 @@ public class PortalStickPlayerListener implements Listener {
 			case HAND:
 				itemInHand = player.getInventory().getItemInMainHand();
 				break;
-			case OFF_HAND: //Don't do anything if the player is holding a portal gun in both hands
+			case OFF_HAND: //Don't do anything if the player is holding a portal gun in both hands. Not like the portal gun in the offhand is useful anyways (can't left click)
 				itemInHand = player.getInventory().getItemInOffHand();
 				if (itemInHand.getType() == player.getInventory().getItemInMainHand().getType()) //or just anything that's similar, doesn't really matter for my purposes as of yet.
 					return;
@@ -88,17 +90,24 @@ public class PortalStickPlayerListener implements Listener {
 			
 			event.setCancelled(true);
 			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-			HashSet<Byte> tb = new HashSet<Byte>();
-			for (int i : region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new Integer[0]))
-				tb.add((byte) i);
+			HashSet<String> tb = new HashSet<>();
+			tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
 
 			
 			if (region.getBoolean(RegionSetting.CHECK_WORLDGUARD) && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, player.getLocation().getBlock()))
 				return;
 			if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
 				return;
-		
-			List<Block> targetBlocks = event.getPlayer().getLineOfSight(tb, 120);
+
+			//Convert strings to materials
+			Set<Material> transparentMaterials = new HashSet<>();
+			for (String proposedMaterial : tb)
+			{
+				transparentMaterials.add(Material.getMaterial(proposedMaterial));
+			}
+
+
+			List<Block> targetBlocks = event.getPlayer().getLineOfSight(transparentMaterials, 120);
 			if (targetBlocks.size() < 1 || !region.getBoolean(RegionSetting.ENABLE_PORTALS))
 				return;
 
