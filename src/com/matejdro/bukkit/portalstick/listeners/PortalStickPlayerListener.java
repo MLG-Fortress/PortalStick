@@ -35,10 +35,16 @@ import de.V10lator.PortalStick.V10Location;
 
 public class PortalStickPlayerListener implements Listener {
 	private final PortalStick plugin;
+	private Set<Material> nonSolidBlocks = new HashSet<>();
 	
 	public PortalStickPlayerListener(PortalStick plugin)
 	{
 		this.plugin = plugin;
+		for (Material material : Material.values())
+        {
+            if (material.isBlock() && !material.isSolid())
+                nonSolidBlocks.add(material);
+        }
 	}
 
 	@EventHandler(ignoreCancelled = false)
@@ -91,7 +97,12 @@ public class PortalStickPlayerListener implements Listener {
 			event.setCancelled(true);
 			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
 			HashSet<String> tb = new HashSet<>();
-			tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
+			try
+			{
+				tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
+			}
+			catch (ArrayStoreException ignored){}
+
 
 			
 			if (region.getBoolean(RegionSetting.CHECK_WORLDGUARD) && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, player.getLocation().getBlock()))
@@ -105,6 +116,11 @@ public class PortalStickPlayerListener implements Listener {
 			{
 				transparentMaterials.add(Material.getMaterial(proposedMaterial));
 			}
+
+			if (transparentMaterials.isEmpty())
+            {
+                transparentMaterials.addAll(nonSolidBlocks);
+            }
 
 
 			List<Block> targetBlocks = event.getPlayer().getLineOfSight(transparentMaterials, 120);
