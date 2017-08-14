@@ -101,7 +101,10 @@ public class PortalStickPlayerListener implements Listener {
 			{
 				tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
 			}
-			catch (ArrayStoreException ignored){}
+			catch (ArrayStoreException e)
+            {
+			    e.printStackTrace();
+            }
 
 
 			

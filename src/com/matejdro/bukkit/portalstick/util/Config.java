@@ -127,6 +127,8 @@ public class Config {
         soundNative[Sound.PORTAL_CREATE_ORANGE.ordinal()] = getString("sounds.minecraft.create-orange-portal", "STEP_WOOL:0.3");
         soundNative[Sound.PORTAL_EXIT_BLUE.ordinal()] = getString("sounds.minecraft.exit-blue-portal", "ENDERMAN_TELEPORT0");
         soundNative[Sound.PORTAL_EXIT_ORANGE.ordinal()] = getString("sounds.minecraft.exit-orange-portal", "ENDERMAN_TELEPORT");
+        soundNative[Sound.PORTAL_EXIT_BLUE.ordinal()] = getString("sounds.minecraft.enter-blue-portal", "fortress.portal.enter");
+        soundNative[Sound.PORTAL_EXIT_ORANGE.ordinal()] = getString("sounds.minecraft.enter-orange-portal", "fortress.portal.enter");
         soundNative[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.minecraft.cannot-create-portal", "");
         soundNative[Sound.GRILL_EMANCIPATE.ordinal()] = getString("sounds.minecraft.grill-emancipate", "FIZZ");
         soundNative[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.minecraft.faith-plate-launch", "EXPLODE:0.5");
@@ -342,6 +344,8 @@ public class Config {
 		PORTAL_CREATE_ORANGE,
 		PORTAL_EXIT_BLUE,
 		PORTAL_EXIT_ORANGE,
+		PORTAL_ENTER_BLUE,
+        PORTAL_ENTER_ORANGE,
 		PORTAL_CANNOT_CREATE,
 		GRILL_EMANCIPATE,
 		FAITHPLATE_LAUNCH,

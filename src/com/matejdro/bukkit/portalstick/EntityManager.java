@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
@@ -287,12 +288,28 @@ public class EntityManager implements Runnable {
 		
 		destination.disabled = true;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){public void run(){destination.disabled = false;}}, 10L);
-		
-		if (portal.orange)
-			plugin.util.playSound(Sound.PORTAL_EXIT_ORANGE, new V10Location(teleport));
-		else
-			plugin.util.playSound(Sound.PORTAL_EXIT_BLUE, new V10Location(teleport));
-		
+
+		final boolean orange = portal.orange;
+
+        if (orange)
+            plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new V10Location(oloc));
+        else
+            plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new V10Location(oloc));
+
+
+		//Delay playing the sound by a tick so the player exiting will hear it
+		new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				if (orange)
+					plugin.util.playSound(Sound.PORTAL_EXIT_ORANGE, new V10Location(teleport));
+				else
+					plugin.util.playSound(Sound.PORTAL_EXIT_BLUE, new V10Location(teleport));
+			}
+		}.runTask(plugin);
+
 		return new V10Teleport(teleport, outvector);
 	}
 	
