@@ -124,7 +124,7 @@ public class PortalStickPlayerListener implements Listener {
 
 
 			List<Block> targetBlocks = event.getPlayer().getLineOfSight(transparentMaterials, 120);
-			if (targetBlocks.size() < 1 || !region.getBoolean(RegionSetting.ENABLE_PORTALS))
+			if (targetBlocks.size() < 1)
 				return;
 
 			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(event.getPlayer(), targetBlocks, event.getAction());
@@ -143,8 +143,8 @@ public class PortalStickPlayerListener implements Listener {
 					  for(int i = 0; i < 2; i++)
 						if(p.inside[i] != null && p.inside[i].equals(loc))
 						{
-							plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-							plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
+							//plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
+							//plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
 							return;
 						}
 					}

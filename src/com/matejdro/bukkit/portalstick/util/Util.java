@@ -2,6 +2,7 @@ package com.matejdro.bukkit.portalstick.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.SoundCategory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -73,66 +74,50 @@ public class Util {
     }
     
     public void playSound(Sound sound, V10Location loc)
-    {
-      if (!plugin.regionManager.getRegion(loc).getBoolean(RegionSetting.ENABLE_SOUNDS))
-    	return;
-      
-      Plugin spoutPlugin = plugin.getServer().getPluginManager().getPlugin("Spout");
-      if(spoutPlugin == null || !plugin.config.useSpoutSounds)
-      {
-        if(plugin.config.useNativeSounds)
-        {
-          String raw = plugin.config.soundNative[sound.ordinal()];
-          if(raw == null || raw.equals(""))
-        	return;
-          String[] split = raw.split(":");
-          float volume = 1.0F;
-          float pitch = volume;
-          if(split.length > 1)
-        	try
-          	{
-        	  volume = Float.parseFloat(split[1]);
-          	}
-          	catch(Exception e)
-          	{
-          	  plugin.getLogger().info("Warning: Invalid volume \""+split[1]+"\" for sound "+split[0]);
-          	  volume = 1.0F;
-          	}
-          if(split.length > 2)
-          {
-        	try
-        	{
-        	  volume = Float.parseFloat(split[1]);
-        	}
-        	catch(Exception e)
-          	{
-          	  plugin.getLogger().info("Warning: Invalid pitch \""+split[2]+"\" for sound "+split[0]);
-          	  pitch = 1.0F;
-          	}
-          }
-          try
-          {
-        	org.bukkit.Sound s = org.bukkit.Sound.valueOf(split[0]);
-        	loc.getHandle().getWorld().playSound(loc.getHandle(), s, volume, pitch);
-          }
-          catch(IllegalArgumentException e)
-          {
-          }
-        }
-      }
-      else
-      {
-    	String url = plugin.config.soundUrls[sound.ordinal()];
-    	if(url != null && url.length() > 4 && url.length() < 257)
-		{}
-    	else
-    	{
-    	  plugin.config.useSpoutSounds = false;
-    	  playSound(sound, loc);
-    	  plugin.config.useSpoutSounds = true;
-    	}
-      }
-    }
+	{
+		if (!plugin.regionManager.getRegion(loc).getBoolean(RegionSetting.ENABLE_SOUNDS))
+			return;
+
+		if (plugin.config.useNativeSounds)
+		{
+			String raw = plugin.config.soundNative[sound.ordinal()];
+			if (raw == null || raw.equals(""))
+				return;
+			String[] split = raw.split(":");
+			float volume = 1.0F;
+			float pitch = volume;
+			if (split.length > 1)
+				try
+				{
+					volume = Float.parseFloat(split[1]);
+				}
+				catch (Exception e)
+				{
+					plugin.getLogger().info("Warning: Invalid volume \"" + split[1] + "\" for sound " + split[0]);
+					volume = 1.0F;
+				}
+			if (split.length > 2)
+			{
+				try
+				{
+					volume = Float.parseFloat(split[1]);
+				}
+				catch (Exception e)
+				{
+					plugin.getLogger().info("Warning: Invalid pitch \"" + split[2] + "\" for sound " + split[0]);
+					pitch = 1.0F;
+				}
+			}
+			try
+			{
+				//org.bukkit.Sound s = org.bukkit.Sound.valueOf(split[0]);
+				loc.getHandle().getWorld().playSound(loc.getHandle(), split[0], SoundCategory.BLOCKS, volume, pitch);
+			}
+			catch (IllegalArgumentException e)
+			{
+			}
+		}
+	}
     
     public int getLeftPortalColor(int preset)
     {
