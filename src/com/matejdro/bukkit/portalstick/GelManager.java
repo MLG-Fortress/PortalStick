@@ -138,10 +138,10 @@ public class GelManager {
 			y = min;
 		  if(!m)
 			y = -y;
-		  if(dir == 2)
-			vector.setX(y);
+		  if(dir == 1)
+			vector.setX(-y);
 		  else
-			vector.setZ(y);
+			vector.setZ(-y);
 		  loc.setY(loc.getY()+0.01D);
 		  entity.teleport(loc);
 		}
