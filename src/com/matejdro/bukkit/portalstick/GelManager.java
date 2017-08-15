@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -146,8 +147,9 @@ public class GelManager {
 		  entity.teleport(loc);
 		}
 		entity.setVelocity(vector);
-		
-		plugin.util.playSound(Sound.GEL_BLUE_BOUNCE, new V10Location(loc));
+        Bukkit.broadcastMessage("dir: " + dir + "vector: " + vector);
+
+        plugin.util.playSound(Sound.GEL_BLUE_BOUNCE, new V10Location(loc));
 		
 		ignore.add(entity);
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() { public void run() { ignore.remove(entity); }}, 10L);
