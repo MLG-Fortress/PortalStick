@@ -42,9 +42,25 @@ public class PortalStickPlayerListener implements Listener {
 		this.plugin = plugin;
 		for (Material material : Material.values())
         {
-            if (material.isBlock() && !material.isSolid())
+            if (material.isBlock() && (!material.isSolid() || material.isTransparent()))
                 nonSolidBlocks.add(material);
         }
+
+        nonSolidBlocks.remove(Material.WATER);
+        nonSolidBlocks.remove(Material.STATIONARY_WATER);
+        nonSolidBlocks.remove(Material.LAVA);
+        nonSolidBlocks.remove(Material.STATIONARY_LAVA);
+
+        //These are solid blocks, despite being transparent.
+        nonSolidBlocks.remove(Material.GLASS);
+        nonSolidBlocks.remove(Material.THIN_GLASS);
+        nonSolidBlocks.remove(Material.STAINED_GLASS);
+        nonSolidBlocks.remove(Material.STAINED_GLASS_PANE);
+        nonSolidBlocks.remove(Material.MOB_SPAWNER);
+        nonSolidBlocks.remove(Material.ICE);
+        nonSolidBlocks.remove(Material.FROSTED_ICE);
+        nonSolidBlocks.remove(Material.BARRIER);
+        nonSolidBlocks.remove(Material.SLIME_BLOCK);
 	}
 
 	@EventHandler(ignoreCancelled = false)
@@ -99,7 +115,7 @@ public class PortalStickPlayerListener implements Listener {
 			HashSet<String> tb = new HashSet<>();
 			try
 			{
-				tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
+				//tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
 			}
 			catch (ArrayStoreException e)
             {
