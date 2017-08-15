@@ -121,7 +121,7 @@ public class GelManager {
 		  if(y < min/3.0D)
 			vector.setY(min / 3.0D);
 		  boolean m;
-		  if(dir == 1)
+		  if(dir == 2)
 			y = vector.getX();
 		  else
 			y = vector.getZ();
@@ -141,7 +141,7 @@ public class GelManager {
 		  if(dir == 2)
 			vector.setX(y);
 		  else
-			vector.setZ(-y);
+			vector.setZ(y);
 		  loc.setY(loc.getY()+0.01D);
 		  entity.teleport(loc);
 		}
