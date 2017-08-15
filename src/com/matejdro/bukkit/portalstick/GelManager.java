@@ -138,7 +138,7 @@ public class GelManager {
 			y = min;
 		  if(!m)
 			y = -y;
-		  if(dir == 1)
+		  if(dir == 2)
 			vector.setX(y);
 		  else
 			vector.setZ(y);
