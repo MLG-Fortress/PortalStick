@@ -147,7 +147,6 @@ public class GelManager {
 		  entity.teleport(loc);
 		}
 		entity.setVelocity(vector);
-        Bukkit.broadcastMessage("dir: " + dir + "vector: " + vector);
 
         plugin.util.playSound(Sound.GEL_BLUE_BOUNCE, new V10Location(loc));
 		
