@@ -298,15 +298,22 @@ public class EntityManager implements Runnable {
 
 
 		//Delay playing the sound by a tick so the player exiting will hear it
+		//Also play the enter sound, since the player entering won't hear it (unless the portals are nearby each other)
 		new BukkitRunnable()
 		{
 			@Override
 			public void run()
 			{
 				if (orange)
+				{
+					plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new V10Location(teleport));
 					plugin.util.playSound(Sound.PORTAL_EXIT_ORANGE, new V10Location(teleport));
+				}
 				else
+				{
+					plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new V10Location(teleport));
 					plugin.util.playSound(Sound.PORTAL_EXIT_BLUE, new V10Location(teleport));
+				}
 			}
 		}.runTask(plugin);
 

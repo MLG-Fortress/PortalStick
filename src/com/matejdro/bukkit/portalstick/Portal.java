@@ -130,6 +130,7 @@ public class Portal {
 //			bh = new BlockHolder(b);
 //			if(plugin.gelManager.gelMap.containsKey(bh))
 //			  plugin.gelManager.removeGel(bh);
+			//TODO: custom block?
 			b.setType(Material.AIR);
 			
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
