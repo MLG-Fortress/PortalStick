@@ -308,7 +308,7 @@ public class PortalManager {
 		if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
 			return false;
 		//RoboMWM: Don't allow player to put portal on transparent blocks
-		if (loc.getY() > 255 || region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(loc.getBlock().getTypeId()))
+		if (loc.getY() > 255 || region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(loc.getBlock().getType().name()))
 			return false;
 		
 		boolean vertical = false;
