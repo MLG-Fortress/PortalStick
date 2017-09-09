@@ -16,7 +16,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 
 import com.matejdro.bukkit.portalstick.Bridge;
 import com.matejdro.bukkit.portalstick.Grill;
@@ -24,7 +23,6 @@ import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
 
-import de.V10lator.PortalStick.AutoUpdate;
 import de.V10lator.PortalStick.V10Location;
 
 public class Config {
@@ -174,19 +172,6 @@ public class Config {
         for (String bridge : bridgeConfig.getStringList("bridges"))
         	plugin.funnelBridgeManager.loadBridge(bridge);
         plugin.getLogger().info(plugin.funnelBridgeManager.bridges.size() + " bridge(s) loaded");
-        
-        try
-        {
-          if(plugin.au == null)
-        	plugin.au = new AutoUpdate(plugin, mainConfig);
-          else
-        	plugin.au.setConfig(mainConfig);
-		} 
-        catch (Exception e)
-        {
-		  plugin.getLogger().info("Auto update error!");
-		  e.printStackTrace();
-		}
         
         saveAll();
 	}
