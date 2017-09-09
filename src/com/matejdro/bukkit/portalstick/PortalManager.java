@@ -96,6 +96,7 @@ public class PortalManager {
 			if(!ol)
 			{
 			  block = loc.getHandle().getBlock();
+			  Material blockType = block.getType();
 			  id = block.getTypeId();
 			  region = plugin.regionManager.getRegion(loc);
 			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
@@ -106,7 +107,7 @@ public class PortalManager {
 				  bh = plugin.gelManager.gelMap.get(bh);
 				  id = bh.id;
 				}
-				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
+				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
 			}

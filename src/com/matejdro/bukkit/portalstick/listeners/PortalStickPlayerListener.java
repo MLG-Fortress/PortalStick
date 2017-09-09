@@ -131,10 +131,10 @@ public class PortalStickPlayerListener implements Listener {
 
 			//Convert strings to materials
 			Set<Material> transparentMaterials = new HashSet<>();
-			for (String proposedMaterial : tb)
-			{
-				transparentMaterials.add(Material.getMaterial(proposedMaterial));
-			}
+//			for (String proposedMaterial : tb)
+//			{
+//				transparentMaterials.add(Material.getMaterial(proposedMaterial));
+//			}
 
 			if (transparentMaterials.isEmpty())
             {
@@ -143,7 +143,7 @@ public class PortalStickPlayerListener implements Listener {
 
 
 			List<Block> targetBlocks = event.getPlayer().getLineOfSight(transparentMaterials, 120);
-			if (targetBlocks.size() < 1)
+			if (targetBlocks.isEmpty())
 				return;
 
 			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(event.getPlayer(), targetBlocks, event.getAction());

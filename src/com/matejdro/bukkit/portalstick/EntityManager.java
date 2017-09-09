@@ -43,7 +43,7 @@ public class EntityManager implements Runnable {
 
 		Region regionTo = plugin.regionManager.getRegion(locTo);
 		Portal portal = plugin.portalManager.insideBlocks.get(locTo);
-		Location teleport;
+		final Location teleport;
 		final Portal destination;
 		boolean ab = portal == null;
 		if(!ab)
@@ -225,7 +225,7 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default:
-						pitch = startpitch;
+						pitch = Math.abs(yaw) - 90;
 				}
         		outvector = outvector.setY(momentum);
         		break;
@@ -243,7 +243,7 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default:
-						pitch = startpitch;
+						pitch = -Math.abs(yaw) + 90;
 				}
         		outvector = outvector.setY(-momentum);
         		break;
