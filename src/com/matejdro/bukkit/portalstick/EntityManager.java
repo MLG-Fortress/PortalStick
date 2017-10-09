@@ -151,6 +151,15 @@ public class EntityManager implements Runnable {
 		final float startyaw = yaw;
 		final float startpitch = pitch; //Just to make it easier to read what's going on
 		double momentum = 0.0;
+		
+		/**
+		* The following sets the yaw (or pitch) relative to the portal.
+		* E.g. yaw = 0 means player is directly facing portal
+		* The following assumptions are made (also present in Location javadoc):
+		* yaw: 0 - 360 (south -> west -> north -> east) (increasing values = turning right)
+		* pitch: -90 - 90 (up -> down) (increasing values = looking down)
+		*/
+		
 		switch(portal.teleportFace)
 	       {
 	       	case NORTH:
@@ -172,13 +181,13 @@ public class EntityManager implements Runnable {
 	       		momentum = vector.getX();
 				//Bukkit.broadcastMessage("West enter");
 	       		break;
-	       	case UP:
+	       	case UP: //bottom portal
 				momentum = vector.getY();
 				pitch += 90;
 				yaw = 0; //Not possible to determine yaw, since ground/ceiling portals do NOT have an orientation!
 				//Bukkit.broadcastMessage("Up enter");
 				break;
-	       	case DOWN:
+	       	case DOWN: //top portal
 	       		momentum = vector.getY();
 				pitch -= 90;
 				yaw = 0;
@@ -189,6 +198,7 @@ public class EntityManager implements Runnable {
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
+			//Also sets direction (yaw and/or pitch) relative to portal
 		Vector outvector = entity.getVelocity().zero();
 		switch(destination.teleportFace)
         {
@@ -211,6 +221,7 @@ public class EntityManager implements Runnable {
         		outvector = outvector.setX(momentum);
 				//Bukkit.broadcastMessage("West exit");
         		break;
+			//Top portal
         	case DOWN:
 				//Bukkit.broadcastMessage("Down exit");
 				switch (portal.teleportFace)
@@ -224,11 +235,17 @@ public class EntityManager implements Runnable {
 						yaw = startyaw; //Flipping client's yaw can cause client side lag(?) (Possibly because it needs to render what was previously not visible? Testing with low render distance seems to alleviate this lag, so answer is probably yes)
 						pitch = -startpitch;
 						break;
-					default:
-						pitch = Math.abs(yaw) - 90;
+					default: //Adjust pitch depending if facing entrance portal or not: Shift yaw to scale from -90 to 90
+						pitch = -Math.abs(180 - yaw) + 90;
+						yaw = startyaw;
+						//if (yaw <= 180)
+						//	pitch = (yaw - 180) + 90;
+						//else
+						//	pitch = (180 - yaw) + 90;
 				}
         		outvector = outvector.setY(momentum);
         		break;
+			//Bottom portal
         	case UP:
 				//Bukkit.broadcastMessage("Up exit");
         		switch (portal.teleportFace)
@@ -243,7 +260,8 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default:
-						pitch = -Math.abs(yaw) + 90;
+						pitch = Math.abs(180 - yaw) - 90;
+						yaw = startyaw;
 				}
         		outvector = outvector.setY(-momentum);
         		break;
@@ -451,3 +469,4 @@ public class EntityManager implements Runnable {
 		return ret;
 	}
 }
+
