@@ -24,7 +24,7 @@ public enum RegionSetting {
 	FUNNEL_BASE_MATERIAL("excursion-funnel-base-block", "41", true),
 	ENABLE_BRIDGE_REDSTONE_DISABLING("enable-disabling-glass-bridge-with-redstone", true, true),
 	TRANSPARENT_BLOCKS("transparent-blocks", Arrays.asList(new String[]{"AIR", "WATER", "STATIONARY_WATER", "LAVA", "STATIONARY_LAVA", "GLASS", "WOODEN_DOOR", "IRON_DOOR", "TRAP_DOOR", "LADDER", "THIN_GLASS", "TRIPWIRE"}), false),
-	PORTAL_BLOCKS("portallable-blocks", Arrays.asList(new Integer[]{42}), false),
+	PORTAL_BLOCKS("portallable-blocks", Arrays.asList(new String[]{"IRON_BLOCK"}), false),
 	ALL_BLOCKS_PORTAL("all-blocks-allow-portals", false, true),
 	UNIQUE_INVENTORY("unique-inventory", false, true),
 	UNIQUE_INVENTORY_ITEMS("unique-inventory-items", Arrays.asList(new Integer[]{280,1}), false),

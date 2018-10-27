@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,14 +40,14 @@ public class Config {
 	private final File bridgeConfigFile;
 	
 	public HashSet<String> DisabledWorlds;
-	public int PortalTool;
-	public short portalToolData; //Short for spout compatiblity!
+	public Material PortalTool;
+	//public short portalToolData; //Short for spout compatiblity!
 	public boolean CompactPortal;
 	public Region GlobalRegion;
 	public int RegionTool;
 	public boolean RestoreInvOnWorldChange;
 	public List<String> ColorPresets;
-	public int FillPortalBack;
+	public Material FillPortalBack;
 	
 	public boolean useNativeSounds, useSpoutSounds;
 	public int soundRange;
@@ -107,17 +108,12 @@ public class Config {
         
         //Load main settings
         DisabledWorlds = new HashSet<String>(getStringList("main.disabled-worlds", new ArrayList<String>()));
-        String[] split = getString("main.portal-tool", "280:0").split(":");
-        PortalTool = Integer.parseInt(split[0]);
-        if(split.length > 1)
-          portalToolData = Short.parseShort(split[1]);
-        else
-          portalToolData = 0;
+        PortalTool = Material.matchMaterial(getString("main.portal-tool", "DIAMOND_HORSE_ARMOR"));
         CompactPortal = getBoolean("main.compact-portal", false);
-        RegionTool = getInt("main.region-tool", 268);
+        //RegionTool = getInt("main.region-tool", 268);
         RestoreInvOnWorldChange = getBoolean("main.restore-inventory-on-world-change", true);
         ColorPresets = getStringList("main.portal-color-presets", Arrays.asList(new String[]{"3-1","2-6","9-10","5-13","8-7","15-4"}));
-        FillPortalBack = getInt("main.fill-portal-back", -1);
+        FillPortalBack = Material.matchMaterial(getString("main.fill-portal-back", "AIR"));
         
         //Load sound settings
         useNativeSounds = getBoolean("sounds.use-minecraft-sounds", true);

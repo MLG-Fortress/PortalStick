@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -40,30 +41,30 @@ public class PortalStickEntityListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	@EventHandler(ignoreCancelled = true)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if(plugin.config.DisabledWorlds.contains(event.getEntity().getLocation().getWorld().getName()))
-		  return;
-		
-		if (event.getEntity() instanceof Player)
-		{
-			Player player = (Player)event.getEntity();
-			if (!plugin.hasPermission(player, plugin.PERM_DAMAGE_BOOTS))
-			  return;
-			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-			ItemStack is = player.getInventory().getBoots();
-			if (event.getCause() == DamageCause.FALL && region.getBoolean(RegionSetting.ENABLE_FALL_DAMAGE_BOOTS))
-			{
-			  boolean ok;
-			  if(is == null)
-				ok = false;
-			  else
-				ok = region.getInt(RegionSetting.FALL_DAMAGE_BOOTS) == is.getTypeId();
-			  if(ok)
-				event.setCancelled(true);
-			}
-		}
-	}
+//	@EventHandler(ignoreCancelled = true)
+//	public void onEntityDamage(EntityDamageEvent event) {
+//		if(plugin.config.DisabledWorlds.contains(event.getEntity().getLocation().getWorld().getName()))
+//		  return;
+//
+//		if (event.getEntity() instanceof Player)
+//		{
+//			Player player = (Player)event.getEntity();
+//			if (!plugin.hasPermission(player, plugin.PERM_DAMAGE_BOOTS))
+//			  return;
+//			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
+//			ItemStack is = player.getInventory().getBoots();
+//			if (event.getCause() == DamageCause.FALL && region.getBoolean(RegionSetting.ENABLE_FALL_DAMAGE_BOOTS))
+//			{
+//			  boolean ok;
+//			  if(is == null)
+//				ok = false;
+//			  else
+//				ok = region.getInt(RegionSetting.FALL_DAMAGE_BOOTS) == is.getTypeId();
+//			  if(ok)
+//				event.setCancelled(true);
+//			}
+//		}
+//	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event)
@@ -79,7 +80,7 @@ public class PortalStickEntityListener implements Listener {
 		{
 			block = iter.next();
 			loc = new V10Location(block.getLocation());
-			if (block.getType() == Material.WOOL)
+			if (Tag.WOOL.isTagged(block.getType()))
 			{
 				portal = plugin.portalManager.borderBlocks.get(loc);
 				if (portal == null)

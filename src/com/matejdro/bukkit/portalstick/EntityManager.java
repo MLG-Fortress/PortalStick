@@ -413,7 +413,7 @@ public class EntityManager implements Runnable {
 			String faithBlock = regionTo.getString(RegionSetting.FAITH_PLATE_BLOCK);
 			Vector velocity = new Vector(0, Double.parseDouble(regionTo.getString(RegionSetting.FAITH_PLATE_POWER).split("-")[1]),0);
 			
-			if (blockIn.getType() == Material.STONE_PLATE && plugin.blockUtil.compareBlockToString(blockUnder, faithBlock))
+			if (blockIn.getType() == Material.STONE_PRESSURE_PLATE && plugin.blockUtil.compareBlockToString(blockUnder, faithBlock))
 				blockStart = blockUnder;
 			else
 				blockStart = blockIn;

@@ -1,24 +1,27 @@
 package de.V10lator.PortalStick;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 
 public class BlockHolder
 {
   private final V10Location loc;
-  public int id;
-  public byte data;
+  public Material id;
+  public BlockData data;
   
   public BlockHolder(Block block)
   {
 	loc = new V10Location(block);
-	id = block.getTypeId();
-	data = block.getData();
+	id = block.getType();
+	data = block.getBlockData();
   }
   
   public void reset()
   {
 	Block b = loc.getHandle().getBlock();
-	b.setTypeIdAndData(id, data, true);
+	b.setType(id);
+	b.setBlockData(data);
   }
   
   @Override

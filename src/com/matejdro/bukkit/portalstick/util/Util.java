@@ -1,7 +1,9 @@
 package com.matejdro.bukkit.portalstick.util;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
@@ -118,7 +120,12 @@ public class Util {
 			}
 		}
 	}
-    
+
+	public Material getPortalColorMaterial(int preset)
+	{
+		return Material.matchMaterial(DyeColor.values()[preset].name() + "_WOOL");
+	}
+
     public int getLeftPortalColor(int preset)
     {
     	return Integer.parseInt(plugin.config.ColorPresets.get(preset).split("-")[0]);
@@ -131,22 +138,23 @@ public class Util {
     
     public ItemStack getItemData(String itemString)
     {
-    	int num;
-    	int id;
-    	short data;
-    	
-    	String[] split = itemString.split(",");
-    	if (split.length < 2)
-    		num = 1;
-    	else
-    		num = Integer.parseInt(split[1]);
-    	split = split[0].split(":");
-    	if (split.length < 2)
-    		data = 0;
-    	else
-    		data = Short.parseShort(split[1]);
-
-    	id = Integer.parseInt(split[0]);
-    	return new ItemStack(id, num, data);
+    	return null;
+//    	int num;
+//    	int id;
+//    	short data;
+//
+//    	String[] split = itemString.split(",");
+//    	if (split.length < 2)
+//    		num = 1;
+//    	else
+//    		num = Integer.parseInt(split[1]);
+//    	split = split[0].split(":");
+//    	if (split.length < 2)
+//    		data = 0;
+//    	else
+//    		data = Short.parseShort(split[1]);
+//
+//    	id = Integer.parseInt(split[0]);
+//    	return new ItemStack(id, num, data);
     }
 }

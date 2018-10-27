@@ -180,8 +180,8 @@ public class GrillManager {
     	}
     }
 
-//	public void emancipate(Entity entity)
-//	{
+	public void emancipate(Entity entity)
+	{
 //	  Region region = plugin.regionManager.getRegion(new V10Location(entity.getLocation()));
 //	  User user = plugin.userManager.getUser(entity);
 //	  boolean clear = region.getBoolean(RegionSetting.GRILLS_REMOVE_ITEMS) && !user.usingTool;
@@ -346,7 +346,7 @@ public class GrillManager {
 //		}
 //	  }
 //	  return slot;
-//	}
+	}
 	
 	public void playGrillAnimation(Location loc)
 	{
