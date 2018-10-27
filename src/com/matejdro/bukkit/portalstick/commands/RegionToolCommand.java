@@ -17,11 +17,11 @@ public class RegionToolCommand extends BaseCommand {
 		if (user.usingTool) {
 			plugin.util.sendMessage(sender, plugin.i18n.getString("RegionToolDisabled", playerName));
 		}
-		else {
-			plugin.util.sendMessage(sender, plugin.i18n.getString("RegionToolEnabled", playerName, args[0]));
-			if (!player.getInventory().contains(plugin.config.RegionTool))
-					player.getInventory().addItem(new ItemStack(plugin.config.RegionTool, 1));
-		}
+//		else {
+//			plugin.util.sendMessage(sender, plugin.i18n.getString("RegionToolEnabled", playerName, args[0]));
+//			if (!player.getInventory().contains(plugin.config.RegionTool))
+//					player.getInventory().addItem(new ItemStack(plugin.config.RegionTool, 1));
+//		}
 		user.usingTool = !user.usingTool;
 		return true;
 	}

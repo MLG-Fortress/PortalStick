@@ -58,7 +58,7 @@ public class Grill {
 	{
 		for (V10Location b: inside)
 		{
-			b.getHandle().getBlock().setType(Material.SUGAR_CANE_BLOCK);
+			b.getHandle().getBlock().setType(Material.SUGAR_CANE);
 			disabled = false;
 		}
 	}
@@ -71,8 +71,8 @@ public class Grill {
     	{
 			rb = b.getHandle().getBlock();
 			plugin.grillManager.insideBlocks.put(b, this);
-			if (rb.getType() != Material.SUGAR_CANE_BLOCK) {
-				rb.setType(Material.SUGAR_CANE_BLOCK);
+			if (rb.getType() != Material.SUGAR_CANE) {
+				rb.setType(Material.SUGAR_CANE);
 				complete = false;
 			}
 			

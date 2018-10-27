@@ -9,6 +9,7 @@ import com.matejdro.bukkit.portalstick.events.PlayerPortalGunShootEvent;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -42,21 +43,24 @@ public class PortalStickPlayerListener implements Listener {
 		this.plugin = plugin;
 		for (Material material : Material.values())
         {
-            if (material.isBlock() && (!material.isSolid() || material.isTransparent()))
+        	if (material.name().startsWith("LEGACY_"))
+        		continue;
+            //if (material.isBlock() && (!material.isSolid() || material.isTransparent()))
+			if (material.isBlock() && (!material.isSolid()))
                 nonSolidBlocks.add(material);
         }
 
         nonSolidBlocks.remove(Material.WATER);
-        nonSolidBlocks.remove(Material.STATIONARY_WATER);
+        //nonSolidBlocks.remove(Material.STATIONARY_WATER);
         nonSolidBlocks.remove(Material.LAVA);
-        nonSolidBlocks.remove(Material.STATIONARY_LAVA);
+        //nonSolidBlocks.remove(Material.STATIONARY_LAVA);
 
         //These are solid blocks, despite being transparent.
         nonSolidBlocks.remove(Material.GLASS);
-        nonSolidBlocks.remove(Material.THIN_GLASS);
-        nonSolidBlocks.remove(Material.STAINED_GLASS);
-        nonSolidBlocks.remove(Material.STAINED_GLASS_PANE);
-        nonSolidBlocks.remove(Material.MOB_SPAWNER);
+//        nonSolidBlocks.remove(Material.THIN_GLASS);
+//        nonSolidBlocks.remove(Material.STAINED_GLASS);
+//        nonSolidBlocks.remove(Material.STAINED_GLASS_PANE);
+//        nonSolidBlocks.remove(Material.MOB_SPAWNER);
         nonSolidBlocks.remove(Material.ICE);
         nonSolidBlocks.remove(Material.FROSTED_ICE);
         nonSolidBlocks.remove(Material.BARRIER);
@@ -105,7 +109,7 @@ public class PortalStickPlayerListener implements Listener {
 			{
 				Block block = event.getClickedBlock();
 				Material mat = block.getType();
-				if(mat == Material.STONE_BUTTON || mat == Material.WOOD_BUTTON || mat == Material.LEVER)
+				if(Tag.BUTTONS.isTagged(mat) || mat == Material.LEVER)
 					return;
 			}
 			
@@ -170,25 +174,25 @@ public class PortalStickPlayerListener implements Listener {
 				}
 			}
 			
-			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_CLOSED_DOOR))
-			{
-				for (Block b : targetBlocks)
-				{
-					if ((b.getType() == Material.IRON_DOOR_BLOCK || b.getType() == Material.WOODEN_DOOR) && ((b.getData() & 4) != 4) )
-					{
-						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
-						return;
-					}
-					else if (b.getType() == Material.TRAP_DOOR && (b.getData() & 4) == 0)
-					{
-						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
-						return;
-
-					}
-				}
-			}
+//			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_CLOSED_DOOR))
+//			{
+//				for (Block b : targetBlocks)
+//				{
+//					if ((b.getType() == Material.IRON_DOOR_BLOCK || b.getType() == Material.WOODEN_DOOR) && ((b.getData() & 4) != 4) )
+//					{
+//						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
+//						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
+//						return;
+//					}
+//					else if (b.getType() == Material.TRAP_DOOR && (b.getData() & 4) == 0)
+//					{
+//						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
+//						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
+//						return;
+//
+//					}
+//				}
+//			}
 			
 			boolean orange = false;
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -226,7 +230,7 @@ public class PortalStickPlayerListener implements Listener {
 //				event.setCancelled(true);
 //		}
 		//Color changing
-		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getType() == Material.AIR && event.getClickedBlock().getType() == Material.WOOL)
+		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getType() == Material.AIR && Tag.WOOL.isTagged(event.getClickedBlock().getType()))
 		{
 			V10Location loc = new V10Location(event.getClickedBlock());
 			Portal portal = plugin.portalManager.borderBlocks.get(loc);
@@ -275,96 +279,96 @@ public class PortalStickPlayerListener implements Listener {
 		plugin.userManager.deleteUser(event.getPlayer());
 	}
 	
-	@EventHandler()
-	public void noPickup(PlayerPickupItemEvent event)
-	{
-	  Item item = event.getItem();
-	  if(plugin.config.DisabledWorlds.contains(item.getWorld().getName()))
-		return;
-	  V10Location iloc = new V10Location(item.getLocation());
-	  Region region = plugin.regionManager.getRegion(iloc);
-	  Player player = event.getPlayer();
-	  User user = plugin.userManager.getUser(player);
-	  if(!region.getBoolean(RegionSetting.GRILLS_REMOVE_ITEMS) || user.usingTool)
-		return;
-	  ItemStack is = item.getItemStack();
-	  int id;
-	  for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
-	  {
-		id = (Integer)iss;
-		if(is.getTypeId() == id)
-		  return;
-	  }
-	  V10Location ploc = new V10Location(player.getLocation());
-	  int a, b;
-	  boolean x;
-	  if(ploc.x != iloc.x)
-	  {
-		a = ploc.x;
-		b = iloc.x;
-		x = true;
-	  }
-	  else if(ploc.z != iloc.z)
-	  {
-		a = ploc.z;
-		b = iloc.z;
-		x = false;
-	  }
-	  else
-		return;
-	  if(a > b)
-	  {
-		int tmp = a;
-		a = b;
-		b = tmp;
-	  }
-	  for(; a < b; a++)
-	  {
-		if(x)
-		  iloc = new V10Location(iloc.world, a, iloc.y, iloc.z);
-		else
-		  iloc = new V10Location(iloc.world, iloc.x, iloc.y, a);
-	    if(plugin.grillManager.insideBlocks.containsKey(iloc))
-	    {
-	      if(plugin.grillManager.insideBlocks.get(iloc).disabled)
-	    	continue;
-	      event.setCancelled(true);
-	      item.remove();
-	      Location el = item.getLocation();
-	      if(x)
-		    el.setX(a);
-	      else
-	    	el.setZ(a);
-	      plugin.grillManager.playGrillAnimation(el);
-	      return;
-	    }
-	  }
-	}
+//	@EventHandler()
+//	public void noPickup(PlayerPickupItemEvent event)
+//	{
+//	  Item item = event.getItem();
+//	  if(plugin.config.DisabledWorlds.contains(item.getWorld().getName()))
+//		return;
+//	  V10Location iloc = new V10Location(item.getLocation());
+//	  Region region = plugin.regionManager.getRegion(iloc);
+//	  Player player = event.getPlayer();
+//	  User user = plugin.userManager.getUser(player);
+//	  if(!region.getBoolean(RegionSetting.GRILLS_REMOVE_ITEMS) || user.usingTool)
+//		return;
+//	  ItemStack is = item.getItemStack();
+//	  int id;
+//	  for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
+//	  {
+//		id = (Integer)iss;
+//		if(is.getTypeId() == id)
+//		  return;
+//	  }
+//	  V10Location ploc = new V10Location(player.getLocation());
+//	  int a, b;
+//	  boolean x;
+//	  if(ploc.x != iloc.x)
+//	  {
+//		a = ploc.x;
+//		b = iloc.x;
+//		x = true;
+//	  }
+//	  else if(ploc.z != iloc.z)
+//	  {
+//		a = ploc.z;
+//		b = iloc.z;
+//		x = false;
+//	  }
+//	  else
+//		return;
+//	  if(a > b)
+//	  {
+//		int tmp = a;
+//		a = b;
+//		b = tmp;
+//	  }
+//	  for(; a < b; a++)
+//	  {
+//		if(x)
+//		  iloc = new V10Location(iloc.world, a, iloc.y, iloc.z);
+//		else
+//		  iloc = new V10Location(iloc.world, iloc.x, iloc.y, a);
+//	    if(plugin.grillManager.insideBlocks.containsKey(iloc))
+//	    {
+//	      if(plugin.grillManager.insideBlocks.get(iloc).disabled)
+//	    	continue;
+//	      event.setCancelled(true);
+//	      item.remove();
+//	      Location el = item.getLocation();
+//	      if(x)
+//		    el.setX(a);
+//	      else
+//	    	el.setZ(a);
+//	      plugin.grillManager.playGrillAnimation(el);
+//	      return;
+//	    }
+//	  }
+//	}
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void trackDrops(PlayerDropItemEvent event)
-	{
-	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))
-		return;
-	  Player player = event.getPlayer();
-	  Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-	  
-	  if(!region.getBoolean(RegionSetting.GRILLS_CLEAR_ITEM_DROPS))
-		return;
-	  
-	  Item item = event.getItemDrop();
-	  ItemStack is = item.getItemStack();
-	  
-	  if(!region.getBoolean(RegionSetting.GRILL_GIVE_GUN_IF_NEEDED))
-	  {
-		int id;
-		for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
-		{
-		  id = (Integer)iss;
-		  if(is.getTypeId() == id)
-			return;
-		}
-	  }
-	  plugin.userManager.getUser(player).droppedItems.add(item);
-	}
+//	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//	public void trackDrops(PlayerDropItemEvent event)
+//	{
+//	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))
+//		return;
+//	  Player player = event.getPlayer();
+//	  Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
+//
+//	  if(!region.getBoolean(RegionSetting.GRILLS_CLEAR_ITEM_DROPS))
+//		return;
+//
+//	  Item item = event.getItemDrop();
+//	  ItemStack is = item.getItemStack();
+//
+//	  if(!region.getBoolean(RegionSetting.GRILL_GIVE_GUN_IF_NEEDED))
+//	  {
+//		int id;
+//		for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
+//		{
+//		  id = (Integer)iss;
+//		  if(is.getTypeId() == id)
+//			return;
+//		}
+//	  }
+//	  plugin.userManager.getUser(player).droppedItems.add(item);
+//	}
 }

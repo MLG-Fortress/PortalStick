@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Entity;
 
 import de.V10lator.PortalStick.V10Location;
@@ -120,12 +121,12 @@ public class Funnel extends Bridge {
 			if (counter > 0)
 			{
 				nextBlock.setType(Material.WATER);
-				byte data;
+				Levelled data = (Levelled)nextBlock.getBlockData();
 				if(reversed)
-				  data = (byte)(counter - 1);
+				  data.setLevel(counter - 1);
 				else
-				  data = (byte)(8 - counter);
-				if (face != BlockFace.UP && face != BlockFace.DOWN) nextBlock.setData(data);
+				  data.setLevel(8 - counter);
+				if (face != BlockFace.UP && face != BlockFace.DOWN) nextBlock.setBlockData(data);
 			}
 			counter--;
 				

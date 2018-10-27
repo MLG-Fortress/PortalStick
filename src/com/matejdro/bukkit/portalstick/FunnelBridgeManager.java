@@ -66,7 +66,7 @@ public class FunnelBridgeManager {
 		Boolean havetorch = false;
 		for (BlockFace check : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP})
 		{
-			if (firstIron.getRelative(check).getType() == Material.REDSTONE_TORCH_ON)
+			if (firstIron.getRelative(check).getType() == Material.REDSTONE_TORCH)
 			{
 				havetorch = true;
 				machineBlocks.add(new V10Location(firstIron.getRelative(check)));
@@ -77,7 +77,7 @@ public class FunnelBridgeManager {
 		havetorch = false;
 		for (BlockFace check : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP})
 		{
-			if (secondIron.getRelative(check).getType() == Material.REDSTONE_TORCH_ON)
+			if (secondIron.getRelative(check).getType() == Material.REDSTONE_TORCH)
 			{
 				havetorch = true;
 				machineBlocks.add(new V10Location(secondIron.getRelative(check)));
