@@ -195,7 +195,10 @@ public class EntityManager implements Runnable {
 	       		break;
 	       }
 
+		Bukkit.broadcastMessage("startyaw: " + startyaw);
+		Bukkit.broadcastMessage("pre-adjusted yaw: " + yaw);
 	    yaw = (yaw + 360) % 360;
+		Bukkit.broadcastMessage("yaw: " + yaw);
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
@@ -222,7 +225,7 @@ public class EntityManager implements Runnable {
         		outvector = outvector.setX(momentum);
 				//Bukkit.broadcastMessage("West exit");
         		break;
-			//Top portal
+			//Ground portal
         	case DOWN:
 				//Bukkit.broadcastMessage("Down exit");
 				switch (portal.teleportFace)
@@ -245,7 +248,7 @@ public class EntityManager implements Runnable {
 				}
         		outvector = outvector.setY(momentum);
         		break;
-			//Bottom portal
+			//Ceiling portal
         	case UP:
 				//Bukkit.broadcastMessage("Up exit");
         		switch (portal.teleportFace)
