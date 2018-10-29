@@ -195,10 +195,7 @@ public class EntityManager implements Runnable {
 	       		break;
 	       }
 
-		Bukkit.broadcastMessage("startyaw: " + startyaw);
-		Bukkit.broadcastMessage("pre-adjusted yaw: " + yaw);
 	    yaw = (yaw + 360) % 360;
-		Bukkit.broadcastMessage("yaw: " + yaw);
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
@@ -239,7 +236,11 @@ public class EntityManager implements Runnable {
 						yaw = startyaw; //Flipping client's yaw can cause client side lag(?) (Possibly because it needs to render what was previously not visible? Testing with low render distance seems to alleviate this lag, so answer is probably yes)
 						pitch = -startpitch;
 						break;
-					default: //Adjust pitch depending if facing entrance portal or not: Shift yaw to scale from -90 to 90
+					default:
+						//translate yaw range to -180 - 180,
+						// get absolute value (we only care about player's facing angle to originating portal),
+						// Multiply by -1 to invert
+						pitch = (Math.abs(180 - yaw) - 90) * -1;
 						yaw = startyaw;
 						//if (yaw <= 180)
 						//	pitch = (yaw - 180) + 90;
@@ -264,7 +265,7 @@ public class EntityManager implements Runnable {
 						break;
 					default:
 						//translate yaw range to -180 - 180,
-						// get absolute value (we only care about player's facing angle to originating portal),
+						// get absolute value (we only care about player's facing angle to originating portal)
 						pitch = Math.abs(180 - yaw) - 90;
 						Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
