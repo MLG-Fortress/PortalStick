@@ -48,6 +48,8 @@ public class PortalStickPlayerListener implements Listener {
             //if (material.isBlock() && (!material.isSolid() || material.isTransparent()))
 			if (material.isBlock() && (!material.isSolid()))
                 nonSolidBlocks.add(material);
+			if (material.name().contains("SIGN"))
+				nonSolidBlocks.add(material);
         }
 
         nonSolidBlocks.remove(Material.WATER);

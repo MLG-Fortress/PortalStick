@@ -152,7 +152,7 @@ public class EntityManager implements Runnable {
 		final float startpitch = pitch; //Just to make it easier to read what's going on
 		double momentum = 0.0;
 		
-		/**
+		/*
 		* The following sets the yaw (or pitch) relative to the portal.
 		* E.g. yaw = 0 means player is directly facing portal
 		* The following assumptions are made (also present in Location javadoc):
@@ -236,7 +236,8 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default: //Adjust pitch depending if facing entrance portal or not: Shift yaw to scale from -90 to 90
-						pitch = -Math.abs(180 - yaw) + 90;
+						pitch = 90 - yaw;
+						Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
 						//if (yaw <= 180)
 						//	pitch = (yaw - 180) + 90;
