@@ -1,5 +1,8 @@
 package com.matejdro.bukkit.portalstick.events;
 
+import com.matejdro.bukkit.portalstick.PortalStick;
+import com.matejdro.bukkit.portalstick.User;
+import org.bukkit.DyeColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -27,13 +30,19 @@ public class PlayerPortalGunShootEvent extends Event
     private List<Block> blocksInLineOfSight;
     private boolean cancelled = false;
     private Action action;
+    private DyeColor color;
 
 
-    public PlayerPortalGunShootEvent(Player player, List<Block> targetBlocks, Action action)
+    public PlayerPortalGunShootEvent(PortalStick plugin, Player player, List<Block> targetBlocks, Action action, boolean orange)
     {
         this.player = player;
         this.blocksInLineOfSight = targetBlocks;
         this.action = action;
+        User user = plugin.userManager.getUser(player);
+        if (orange)
+            color = DyeColor.values()[plugin.util.getRightPortalColor(user.colorPreset)];
+        else
+            color = DyeColor.values()[plugin.util.getLeftPortalColor(user.colorPreset)];
     }
 
     public boolean isCancelled()
@@ -61,4 +70,8 @@ public class PlayerPortalGunShootEvent extends Event
         return this.action;
     }
 
+    public DyeColor getColor()
+    {
+        return color;
+    }
 }

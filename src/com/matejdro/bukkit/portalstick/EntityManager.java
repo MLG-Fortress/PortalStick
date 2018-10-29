@@ -236,8 +236,6 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default: //Adjust pitch depending if facing entrance portal or not: Shift yaw to scale from -90 to 90
-						pitch = 90 - yaw;
-						Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
 						//if (yaw <= 180)
 						//	pitch = (yaw - 180) + 90;
@@ -261,7 +259,9 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default:
-						pitch = Math.abs(180 - yaw) - 90;
+						//pitch = Math.abs(180 - yaw) - 90;
+						pitch = 90 - yaw;
+						Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
 				}
         		outvector = outvector.setY(-momentum);

@@ -52,9 +52,9 @@ public class PortalStickPlayerListener implements Listener {
 				nonSolidBlocks.add(material);
         }
 
-        nonSolidBlocks.remove(Material.WATER);
+        //nonSolidBlocks.remove(Material.WATER);
         //nonSolidBlocks.remove(Material.STATIONARY_WATER);
-        nonSolidBlocks.remove(Material.LAVA);
+        //nonSolidBlocks.remove(Material.LAVA);
         //nonSolidBlocks.remove(Material.STATIONARY_LAVA);
 
         //These are solid blocks, despite being transparent.
@@ -152,7 +152,11 @@ public class PortalStickPlayerListener implements Listener {
 			if (targetBlocks.isEmpty())
 				return;
 
-			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(event.getPlayer(), targetBlocks, event.getAction());
+			boolean orange = false;
+			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+				orange = true;
+
+			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(plugin, event.getPlayer(), targetBlocks, event.getAction(), orange);
 			plugin.getServer().getPluginManager().callEvent(shootEvent);
 			if (shootEvent.isCancelled())
 				return; //TODO: add more methods to determine whether to play "can't create" sound or not
@@ -195,10 +199,7 @@ public class PortalStickPlayerListener implements Listener {
 //					}
 //				}
 //			}
-			
-			boolean orange = false;
-			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-				orange = true;
+
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || transparentMaterials.contains(event.getClickedBlock().getType()))
 			{
 				Block b = targetBlocks.get(targetBlocks.size() - 1);
