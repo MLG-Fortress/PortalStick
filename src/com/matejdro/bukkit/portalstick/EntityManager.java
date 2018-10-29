@@ -146,7 +146,7 @@ public class EntityManager implements Runnable {
 		teleport.setX(teleport.getX() + 0.5D);
 		teleport.setZ(teleport.getZ() + 0.5D);
 							 
-		float yaw = entity.getLocation().getYaw();
+		float yaw = (entity.getLocation().getYaw() + 360) % 360; //https://github.com/EssentialsX/Essentials/blob/849efa9756495a34260d57ff1d81df1283e5f5e7/Essentials/src/com/earth2me/essentials/commands/Commandgetpos.java#L43
 		float pitch = entity.getLocation().getPitch();
 		final float startyaw = yaw;
 		final float startpitch = pitch; //Just to make it easier to read what's going on
@@ -259,8 +259,9 @@ public class EntityManager implements Runnable {
 						pitch = -startpitch;
 						break;
 					default:
-						//pitch = Math.abs(180 - yaw) - 90;
-						pitch = 90 - yaw;
+						//translate yaw range to -180 - 180,
+						// get absolute value (we only care about player's facing angle to originating portal),
+						pitch = Math.abs(180 - yaw) - 90;
 						Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
 				}
