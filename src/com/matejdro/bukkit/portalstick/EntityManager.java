@@ -195,6 +195,7 @@ public class EntityManager implements Runnable {
 	       		break;
 	       }
 
+	    yaw = (yaw + 360) % 360;
 		momentum = Math.abs(momentum);
 		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
