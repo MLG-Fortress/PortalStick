@@ -3,6 +3,7 @@ package com.matejdro.bukkit.portalstick;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -100,6 +101,7 @@ public class PortalStick extends JavaPlugin {
 		tmpList.add(new RegionInfoCommand(this));
 		tmpList.add(new LanguageCommand(this));
 		commands = tmpList.toArray(new BaseCommand[0]);
+		new Metrics(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[])
