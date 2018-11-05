@@ -50,7 +50,8 @@ public class PortalStick extends JavaPlugin {
 
 	public WorldGuardPlugin worldGuard = null;
 	
-	public final Util util = new Util(this);
+	//public final Util util = new Util(this);
+	public Util util;
 	public final BlockUtil blockUtil = new BlockUtil();
 	
 	public final PortalStickEntityListener eL = new PortalStickEntityListener(this);
@@ -66,6 +67,7 @@ public class PortalStick extends JavaPlugin {
 	}
 	
 	public void onEnable() {
+		util = new Util(this);
 		
 		config = new Config(this);
 		
