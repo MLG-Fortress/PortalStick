@@ -3,6 +3,7 @@ package com.matejdro.bukkit.portalstick;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
 import org.bukkit.Location;
@@ -10,13 +11,11 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.Warning;
 import org.bukkit.block.Banner;
-import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -31,11 +30,23 @@ import de.V10lator.PortalStick.V10Location;
 import org.bukkit.material.Bed;
 
 public class PortalManager {
-	private final PortalStick plugin;
+	private PortalStick plugin;
 	
 	PortalManager(PortalStick plugin)
 	{
 		this.plugin = plugin;
+		for (Material material : Material.values())
+		{
+			if (material.name().startsWith("LEGACY_"))
+				continue;
+			if (!material.isSolid())
+				continue;
+			if (material.name().contains("GLASS"))
+				nonPortalableMaterials.add(material);
+		}
+		nonPortalableMaterials.add(Material.WATER);
+		nonPortalableMaterials.add(Material.LAVA);
+		nonPortalableMaterials.add(Material.OBSIDIAN);
 	}
 	
 	public final HashSet<Portal> portals = new HashSet<Portal>();
@@ -45,6 +56,7 @@ public class PortalManager {
 	final HashMap<V10Location, Portal> awayBlocks = new HashMap<V10Location, Portal>();
 	final HashMap<V10Location, Portal> awayBlocksY = new HashMap<V10Location, Portal>();
 	public final HashMap<V10Location, BlockHolder> oldBlocks = new HashMap<V10Location, BlockHolder>();
+	private Set<Material> nonPortalableMaterials = new HashSet<>();
 
 	public void checkEntityMove(Entity e, Region regionFrom, Region regionTo)
 	{
@@ -348,7 +360,8 @@ public class PortalManager {
 		//or containers
 		if (loc.getY() > 255
 				|| region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(bBlock.getType().name())
-				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType()))
+				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType())
+				|| nonPortalableMaterials.contains(bBlock.getType()))
         {
             plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, block);
             return false;
