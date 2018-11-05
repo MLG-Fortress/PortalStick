@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -65,6 +66,43 @@ public class PortalStickEntityListener implements Listener {
 //			}
 //		}
 //	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onHangingEntityBreak(HangingBreakEvent event)
+	{
+		switch (event.getCause())
+		{
+			case PHYSICS:
+			case OBSTRUCTION:
+				event.setCancelled(isNearPortal(event.getEntity().getLocation()));
+		}
+	}
+
+	//copied from my PortalEntities plugin - RoboMWM
+	public boolean isNearPortal(Location location)
+	{
+		World world = location.getWorld();
+		if(plugin.config.DisabledWorlds.contains(location.getWorld().getName()))
+			return false;
+		for (Portal portal : plugin.portalManager.portals)
+		{
+			//I was about to do exact block checks, but then realized
+			// a) it's a bit more work to do and
+			// b) potentially may be a lot of location#getBlock calls (performance ?)
+			Location portalLocation = portal.inside[0].getHandle();
+			try
+			{
+				if (location.distanceSquared(portalLocation) <= 9) //3 blocks
+					return true;
+				continue;
+			}
+			catch (Exception e)
+			{
+				continue; //Just skip if there's an issue (null, not same world, etc.)
+			}
+		}
+		return false;
+	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityExplode(EntityExplodeEvent event)

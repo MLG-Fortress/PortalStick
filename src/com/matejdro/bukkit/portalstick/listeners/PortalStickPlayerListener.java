@@ -36,7 +36,7 @@ import de.V10lator.PortalStick.V10Location;
 
 public class PortalStickPlayerListener implements Listener {
 	private final PortalStick plugin;
-	private Set<Material> nonSolidBlocks = new HashSet<>();
+	public static Set<Material> nonSolidBlocks = new HashSet<>();
 	
 	public PortalStickPlayerListener(PortalStick plugin)
 	{
@@ -51,6 +51,8 @@ public class PortalStickPlayerListener implements Listener {
 			if (material.name().contains("SIGN"))
 				nonSolidBlocks.add(material);
         }
+
+		nonSolidBlocks.add(Material.IRON_BARS);
 
         //nonSolidBlocks.remove(Material.WATER);
         //nonSolidBlocks.remove(Material.STATIONARY_WATER);
@@ -205,7 +207,11 @@ public class PortalStickPlayerListener implements Listener {
 				Block b = targetBlocks.get(targetBlocks.size() - 1);
 				loc = new V10Location(b);
 		        if (targetBlocks.size() < 2)
-		        	plugin.portalManager.placePortal(loc, event.getPlayer(), orange);
+				{
+					//plugin.portalManager.placePortal(loc, event.getPlayer(), orange);
+					plugin.getLogger().warning("Player stuck?? " + player.getLocation());
+					return;
+				}
 		        else
 		    	   plugin.portalManager.placePortal(loc, b.getFace(targetBlocks.get(targetBlocks.size() - 2)), event.getPlayer(), orange, true);
 			}

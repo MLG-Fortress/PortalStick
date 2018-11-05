@@ -13,7 +13,7 @@ import de.V10lator.PortalStick.V10Location;
 
 public class Portal {
 	private final PortalStick plugin;
-	final HashSet<V10Location> border;
+	public final HashSet<V10Location> border;
 	public final V10Location[] inside;
 	public final V10Location[] teleport;
 	private final V10Location[] behind;

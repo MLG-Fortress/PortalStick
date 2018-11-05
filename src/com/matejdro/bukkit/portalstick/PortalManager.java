@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Warning;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -303,13 +306,18 @@ public class PortalManager {
 	{
 		//Check if player can place here
 		Location loc = block.getHandle();
+		Block bBlock = loc.getBlock();
 		Region region = plugin.regionManager.getRegion(block);
 		if (region.getBoolean(RegionSetting.CHECK_WORLDGUARD) && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, loc))
 			return false;
 		if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
 			return false;
 		//RoboMWM: Don't allow player to put portal on transparent blocks
-		if (loc.getY() > 255 || region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(loc.getBlock().getType().name()))
+		//or containers
+		if (loc.getY() > 255
+				|| region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(bBlock.getType().name())
+				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType())
+				|| bBlock.getState() instanceof Container)
 			return false;
 		
 		boolean vertical = false;
@@ -366,7 +374,9 @@ public class PortalManager {
 		return true;
 		
 	}
- 
+
+	@Deprecated
+	@Warning(reason = "Does not perform any checks")
 	public void placePortal(V10Location block, Player player, boolean orange)
 	{
 		
