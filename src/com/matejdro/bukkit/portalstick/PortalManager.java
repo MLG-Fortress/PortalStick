@@ -50,6 +50,9 @@ public class PortalManager {
 		nonPortalableMaterials.add(Material.LAVA);
 		nonPortalableMaterials.add(Material.OBSIDIAN);
 		nonPortalableMaterials.add(Material.FARMLAND);
+		nonPortalableMaterials.add(Material.COMMAND_BLOCK);
+		nonPortalableMaterials.add(Material.REPEATING_COMMAND_BLOCK);
+		nonPortalableMaterials.add(Material.CHAIN_COMMAND_BLOCK);
 	}
 	
 	public final HashSet<Portal> portals = new HashSet<Portal>();
@@ -132,8 +135,8 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
-//				if (nonoBlock(block))
-//					return false;
+			  if (nonoBlock(block))
+				return false;
 			}
 		}
 		for (V10Location loc: portal.inside)
@@ -173,11 +176,8 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
 			  }
-//				if (nonoBlock(block))
-//					return false;
-//			  for (BlockFace face : getFacesOfInsideBlocks(portal))
-//				if (nonoAttachedInsideBlock(block.getRelative(face)))
-//					return false;
+			  if (nonoBlock(block))
+			  	return false;
 			}
 		}
 		for(Portal p: overlap)
@@ -185,37 +185,39 @@ public class PortalManager {
 		return true;
 	}
 
-	private BlockFace[] getFacesOfInsideBlocks(PortalCoord portal)
-	{
-		BlockFace[] faces = new BlockFace[2];
-		faces[0] = (portal.tpFace);
-		faces[1] = (portal.tpFace.getOppositeFace());
-		return faces;
-	}
+//	private BlockFace[] getFacesOfInsideBlocks(PortalCoord portal)
+//	{
+//		BlockFace[] faces = new BlockFace[2];
+//		faces[0] = (portal.tpFace);
+//		faces[1] = (portal.tpFace.getOppositeFace());
+//		return faces;
+//	}
+//
+//	private boolean nonoAttachedInsideBlock(Block block)
+//	{
+//		Material material = block.getType();
+//		switch (material)
+//		{
+//			case WATER:
+//			case LAVA:
+//				return false;
+//		}
+//		return !material.isSolid();
+//	}
 
-	private boolean nonoAttachedInsideBlock(Block block)
-	{
-		Material material = block.getType();
-		switch (material)
-		{
-			case WATER:
-			case LAVA:
-				return false;
-		}
-		return !material.isSolid();
-	}
-
+	//Prevents portals from replacing blocks with state
+	//Not only are states not stored, but things like containers drop their items
+	//And I ain't gonna deal with that.
 	private boolean nonoBlock(Block block)
     {
     	Material material = block.getType();
-        if (Tag.DOORS.isTagged(material))
-            return true;
+//        if (Tag.DOORS.isTagged(material))
+//            return true;
         switch (material)
 		{
-			case COMMAND_BLOCK:
-			case CHAIN_COMMAND_BLOCK:
-			case REPEATING_COMMAND_BLOCK:
 			case END_GATEWAY:
+			case PLAYER_HEAD:
+			case PLAYER_WALL_HEAD:
 				return true;
 		}
 
