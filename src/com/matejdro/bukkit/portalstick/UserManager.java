@@ -20,6 +20,8 @@ public class UserManager implements Runnable {
 	UserManager(PortalStick plugin)
 	{
 		this.plugin = plugin;
+		for (Player player : plugin.getServer().getOnlinePlayers())
+			createUser(player);
 	}
 	
 	public void createUser(Entity entity)

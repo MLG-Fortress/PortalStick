@@ -241,9 +241,8 @@ public class PortalManager {
 	{
 		PortalCoord portal;
 		//autocorrect to ground level if selected block is only one block above ground
-		Block bBlock = block.getHandle().getBlock();
 		if (block.getHandle().getBlock().getRelative(face).getType() != Material.AIR)
-			block = new V10Location(bBlock.getLocation());
+			block = new V10Location(block.getHandle().getBlock().getRelative(BlockFace.UP));
 
 		portal = generatePortal(block, face); // 0
 		if(!checkPortal(portal))
