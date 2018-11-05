@@ -20,8 +20,7 @@ public class BlockHolder
   public void reset()
   {
 	Block b = loc.getHandle().getBlock();
-	b.setType(id);
-	b.setBlockData(data);
+	b.setBlockData(data, false);
   }
   
   @Override
