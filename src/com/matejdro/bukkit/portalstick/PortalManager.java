@@ -167,6 +167,7 @@ public class PortalManager {
     {
         if (Tag.DOORS.isTagged(block.getType()))
             return true;
+        plugin.getLogger().info(block.getState().getClass().getName());
 		return block.getState(false) != null && !block.getState(false).getClass().equals(BlockState.class);
 	}
 
