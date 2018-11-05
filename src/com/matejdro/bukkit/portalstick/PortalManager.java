@@ -193,7 +193,6 @@ public class PortalManager {
 			case END_GATEWAY:
 				return true;
 		}
-        plugin.getLogger().info(block.getState().getClass().getName());
 
         //Got any better ideas? No way to check if the class is not a child of class we're looking for
 		// since Bukkit is only an interface... unless we get CB itself ofc.
