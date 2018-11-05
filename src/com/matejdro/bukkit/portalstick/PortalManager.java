@@ -1,6 +1,8 @@
 package com.matejdro.bukkit.portalstick;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -155,7 +157,7 @@ public class PortalManager {
 			}
 			else
 			  ol = false;
-			
+
 			if(!ol)
 			{
 			  block = loc.getHandle().getBlock();
@@ -174,6 +176,9 @@ public class PortalManager {
 			  }
 				if (nonoBlock(block))
 					return false;
+//			  for (BlockFace face : getFacesOfInsideBlocks(portal))
+//				if (nonoAttachedInsideBlock(block.getRelative(face)))
+//					return false;
 			}
 		}
 		for(Portal p: overlap)
@@ -181,11 +186,32 @@ public class PortalManager {
 		return true;
 	}
 
+	private BlockFace[] getFacesOfInsideBlocks(PortalCoord portal)
+	{
+		BlockFace[] faces = new BlockFace[2];
+		faces[0] = (portal.tpFace);
+		faces[1] = (portal.tpFace.getOppositeFace());
+		return faces;
+	}
+
+	private boolean nonoAttachedInsideBlock(Block block)
+	{
+		Material material = block.getType();
+		switch (material)
+		{
+			case WATER:
+			case LAVA:
+				return false;
+		}
+		return !material.isSolid();
+	}
+
 	private boolean nonoBlock(Block block)
     {
-        if (Tag.DOORS.isTagged(block.getType()))
+    	Material material = block.getType();
+        if (Tag.DOORS.isTagged(material))
             return true;
-        switch (block.getType())
+        switch (material)
 		{
 			case COMMAND_BLOCK:
 			case CHAIN_COMMAND_BLOCK:

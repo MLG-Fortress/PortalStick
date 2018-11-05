@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.portalstick.listeners;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -48,13 +49,19 @@ public class PortalStickPlayerListener implements Listener {
             //if (material.isBlock() && (!material.isSolid() || material.isTransparent()))
 			if (material.isBlock() && (!material.isSolid()))
                 nonSolidBlocks.add(material);
-			if (material.name().contains("SIGN"))
+			if (material.name().contains("SIGN")
+			|| material.name().contains("FENCE"))
 				nonSolidBlocks.add(material);
         }
 
 		nonSolidBlocks.add(Material.IRON_BARS);
 		nonSolidBlocks.add(Material.SPAWNER);
 		nonSolidBlocks.add(Material.BARRIER);
+		nonSolidBlocks.add(Material.IRON_DOOR);
+		nonSolidBlocks.add(Material.IRON_TRAPDOOR);
+		nonSolidBlocks.add(Material.OAK_DOOR);
+		nonSolidBlocks.add(Material.OAK_TRAPDOOR);
+		nonSolidBlocks.add(Material.JUNGLE_DOOR);
 
         //nonSolidBlocks.remove(Material.WATER);
         //nonSolidBlocks.remove(Material.STATIONARY_WATER);
@@ -85,14 +92,11 @@ public class PortalStickPlayerListener implements Listener {
 		//Portal tool
 		//RoboMWM: account for 1.9 offhand changes
 
+		if (event.getAction() == Action.PHYSICAL)
+			return;
+
 		ItemStack itemInHand;
 		boolean mainHand = true;
-
-		if (event.getHand() == null) //I'm still not sure why this happens... Probably a plugin sending a fake interact event??
-		{
-			plugin.getLogger().info("Uh somehow event#gethand was null");
-			return;
-		}
 
 		switch (event.getHand())
 		{
@@ -122,15 +126,15 @@ public class PortalStickPlayerListener implements Listener {
 			
 			event.setCancelled(true);
 			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-			HashSet<String> tb = new HashSet<>();
-			try
-			{
-				//tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
-			}
-			catch (ArrayStoreException e)
-            {
-			    e.printStackTrace();
-            }
+//			HashSet<String> tb = new HashSet<>();
+//			try
+//			{
+//				//tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
+//			}
+//			catch (ArrayStoreException e)
+//            {
+//			    e.printStackTrace();
+//            }
 
 
 			
@@ -159,25 +163,23 @@ public class PortalStickPlayerListener implements Listener {
 			boolean orange = false;
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
 				orange = true;
-
-			PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(plugin, event.getPlayer(), targetBlocks, event.getAction(), orange);
-			plugin.getServer().getPluginManager().callEvent(shootEvent);
-			if (shootEvent.isCancelled())
-				return; //TODO: add more methods to determine whether to play "can't create" sound or not
 			
 			V10Location loc;
 			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_THROUGH_PORTAL))
 			{
+				List<Block> goodBlocks = new ArrayList<>(targetBlocks.size());
 				for (Block b : targetBlocks)
 				{
 					loc = new V10Location(b);
+					goodBlocks.add(b);
 					for (Portal p : plugin.portalManager.portals)
 					{
 					  for(int i = 0; i < 2; i++)
 						if(p.inside[i] != null && p.inside[i].equals(loc))
 						{
 							//plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-							plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
+							//plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
+							fireGunShootEvent(player, goodBlocks, event.getAction(), orange);
 							return;
 						}
 					}
@@ -203,6 +205,8 @@ public class PortalStickPlayerListener implements Listener {
 //					}
 //				}
 //			}
+
+			fireGunShootEvent(player, targetBlocks, event.getAction(), orange);
 
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || transparentMaterials.contains(event.getClickedBlock().getType()))
 			{
@@ -266,6 +270,13 @@ public class PortalStickPlayerListener implements Listener {
 			plugin.util.sendMessage(player, plugin.i18n.getString("SwitchedPortalColor", player.getName(), color1, color2));
 		}
 
+	}
+
+	public boolean fireGunShootEvent(Player player, List<Block> targetBlocks, Action action, boolean orange)
+	{
+		PlayerPortalGunShootEvent shootEvent = new PlayerPortalGunShootEvent(plugin, player, targetBlocks, action, orange);
+		plugin.getServer().getPluginManager().callEvent(shootEvent);
+		return shootEvent.isCancelled(); //TODO: add more methods to determine whether to play "can't create" sound or not
 	}
  	    
 	@EventHandler(ignoreCancelled = true)

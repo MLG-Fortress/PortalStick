@@ -131,7 +131,7 @@ public class Portal {
 //			if(plugin.gelManager.gelMap.containsKey(bh))
 //			  plugin.gelManager.removeGel(bh);
 			//TODO: custom block?
-			b.setType(Material.AIR);
+			b.setType(Material.AIR, false);
 			
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
 			 {			 				 
@@ -147,7 +147,7 @@ public class Portal {
 						 		if (destination.open)
 							 		for (V10Location b2: destination.inside)
 							 		  if(b2 != null)
-							 			b2.getHandle().getBlock().setType(Material.REDSTONE_TORCH);
+							 			b2.getHandle().getBlock().setType(Material.REDSTONE_TORCH, false);
 						 		else
 						 			destination.placetorch = true;
 						 }
@@ -158,7 +158,7 @@ public class Portal {
 		
 		if (placetorch)
 		{
-			inside[0].getHandle().getBlock().setType(Material.REDSTONE_TORCH);
+			inside[0].getHandle().getBlock().setType(Material.REDSTONE_TORCH, false);
 			placetorch = false;
 		}
 		
@@ -194,16 +194,16 @@ public class Portal {
 			color = (byte) plugin.util.getLeftPortalColor(owner.colorPreset);			
 		
 		for (V10Location b: border)
-    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color));
+    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
 
 		if (!open)
 			for (V10Location b: inside)
 			  if(b != null)
-	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color));
+	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
 		
 		if (plugin.config.CompactPortal)
 			for (V10Location b: behind)
-	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color));
+	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
 	}
 	
 	public void create()
@@ -231,7 +231,7 @@ public class Portal {
     		  plugin.gelManager.removeGel(bh);
     		}
     		plugin.portalManager.oldBlocks.put(loc, bh);
-    		rb.setType(plugin.util.getPortalColorMaterial(color));
+    		rb.setType(plugin.util.getPortalColorMaterial(color), false);
     		plugin.portalManager.borderBlocks.put(loc, this);
        	}
     	for (V10Location loc: inside)
@@ -267,11 +267,11 @@ public class Portal {
         		plugin.portalManager.oldBlocks.put(loc, bh);
         		if (plugin.config.CompactPortal)
         		{
-        			rb.setType(plugin.util.getPortalColorMaterial(color));
+        			rb.setType(plugin.util.getPortalColorMaterial(color), false);
         		}
         		else
         		{
-        			rb.setType(plugin.config.FillPortalBack);
+        			rb.setType(plugin.config.FillPortalBack, false);
         		}
         		plugin.portalManager.behindBlocks.put(loc, this);
         	}
