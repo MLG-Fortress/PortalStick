@@ -213,14 +213,20 @@ public class PortalManager {
 
 	private PortalCoord generateHorizontalPortal(V10Location block, BlockFace face)
 	{
-		PortalCoord portal = generatePortal(block, face); // 0
+		PortalCoord portal;
+		//autocorrect to ground level if selected block is only one block above ground
+		Block bBlock = block.getHandle().getBlock();
+		if (block.getHandle().getBlock().getRelative(face).getType() != Material.AIR)
+			block = new V10Location(bBlock.getLocation());
+
+		portal = generatePortal(block, face); // 0
 		if(!checkPortal(portal))
 		{
 		  block = new V10Location(block.getHandle().getBlock().getRelative(BlockFace.DOWN)); // -1
 		  portal = generatePortal(block, face);
 		  if(!checkPortal(portal))
 		  {
-			block = new V10Location(block.getHandle().getBlock().getRelative(BlockFace.DOWN)); // -2 TODO: Doesn't work
+			block = new V10Location(block.getHandle().getBlock().getRelative(BlockFace.DOWN)); // -2
 			portal = generatePortal(block, face);
 			if(!checkPortal(portal))
 			{
