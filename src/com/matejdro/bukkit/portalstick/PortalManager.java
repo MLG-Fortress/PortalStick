@@ -123,7 +123,6 @@ public class PortalManager {
 			{
 			  block = loc.getHandle().getBlock();
 			  Material blockType = block.getType();
-			  id = block.getType();
 			  region = plugin.regionManager.getRegion(loc);
 			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
 			  {
@@ -241,7 +240,7 @@ public class PortalManager {
 	{
 		PortalCoord portal;
 		//autocorrect to ground level if selected block is only one block above ground
-		if (block.getHandle().getBlock().getRelative(face).getType() != Material.AIR)
+		if (block.getHandle().getBlock().getRelative(BlockFace.DOWN).getRelative(face).getType() != Material.AIR)
 			block = new V10Location(block.getHandle().getBlock().getRelative(BlockFace.UP));
 
 		portal = generatePortal(block, face); // 0
