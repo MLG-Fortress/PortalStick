@@ -46,7 +46,7 @@ public class PortalStick extends JavaPlugin {
 	public final GrillManager grillManager = new GrillManager(this);
 	public final PortalManager portalManager = new PortalManager(this);
 	public final RegionManager regionManager = new RegionManager(this);
-	public final UserManager userManager = new UserManager(this);
+	public UserManager userManager;
 
 	public WorldGuardPlugin worldGuard = null;
 	
@@ -67,6 +67,7 @@ public class PortalStick extends JavaPlugin {
 	}
 	
 	public void onEnable() {
+		userManager = new UserManager(this);
 		util = new Util(this);
 		
 		config = new Config(this);

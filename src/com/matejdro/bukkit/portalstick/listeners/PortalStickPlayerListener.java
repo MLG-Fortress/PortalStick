@@ -35,7 +35,7 @@ import com.matejdro.bukkit.portalstick.util.RegionSetting;
 import de.V10lator.PortalStick.V10Location;
 
 public class PortalStickPlayerListener implements Listener {
-	private final PortalStick plugin;
+	private PortalStick plugin;
 	public static Set<Material> nonSolidBlocks = new HashSet<>();
 	
 	public PortalStickPlayerListener(PortalStick plugin)
