@@ -41,9 +41,9 @@ public class PlayerPortalGunShootEvent extends Event implements Cancellable
         this.action = action;
         User user = plugin.userManager.getUser(player);
         if (orange)
-            color = DyeColor.values()[plugin.util.getRightPortalColor(user.colorPreset)];
+            color = color.values()[plugin.util.getRightPortalColor(user.colorPreset)];
         else
-            color = DyeColor.values()[plugin.util.getLeftPortalColor(user.colorPreset)];
+            color = color.values()[plugin.util.getLeftPortalColor(user.colorPreset)];
     }
 
     public boolean isCancelled()
