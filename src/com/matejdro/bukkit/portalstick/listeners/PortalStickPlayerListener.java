@@ -62,6 +62,8 @@ public class PortalStickPlayerListener implements Listener {
 		nonSolidBlocks.add(Material.OAK_DOOR);
 		nonSolidBlocks.add(Material.OAK_TRAPDOOR);
 		nonSolidBlocks.add(Material.JUNGLE_DOOR);
+		nonSolidBlocks.add(Material.JUNGLE_TRAPDOOR);
+
 
         //nonSolidBlocks.remove(Material.WATER);
         //nonSolidBlocks.remove(Material.STATIONARY_WATER);

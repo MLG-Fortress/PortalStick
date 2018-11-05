@@ -49,6 +49,7 @@ public class PortalManager {
 		nonPortalableMaterials.add(Material.WATER);
 		nonPortalableMaterials.add(Material.LAVA);
 		nonPortalableMaterials.add(Material.OBSIDIAN);
+		nonPortalableMaterials.add(Material.FARMLAND);
 	}
 	
 	public final HashSet<Portal> portals = new HashSet<Portal>();
@@ -174,8 +175,8 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
 			  }
-				if (nonoBlock(block))
-					return false;
+//				if (nonoBlock(block))
+//					return false;
 //			  for (BlockFace face : getFacesOfInsideBlocks(portal))
 //				if (nonoAttachedInsideBlock(block.getRelative(face)))
 //					return false;
