@@ -9,9 +9,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.Warning;
+import org.bukkit.block.Banner;
+import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
+import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -23,6 +28,7 @@ import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
 import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
+import org.bukkit.material.Bed;
 
 public class PortalManager {
 	private final PortalStick plugin;
@@ -167,8 +173,23 @@ public class PortalManager {
     {
         if (Tag.DOORS.isTagged(block.getType()))
             return true;
+        switch (block.getType())
+		{
+			case COMMAND_BLOCK:
+			case CHAIN_COMMAND_BLOCK:
+			case REPEATING_COMMAND_BLOCK:
+			case END_GATEWAY:
+				return true;
+		}
         plugin.getLogger().info(block.getState().getClass().getName());
-		return block.getState(false) != null && !block.getState(false).getClass().equals(BlockState.class);
+
+        //Got any better ideas? No way to check if the class is not a child of class we're looking for
+		// since Bukkit is only an interface... unless we get CB itself ofc.
+		BlockState state = block.getState();
+		return state instanceof Container
+				|| state instanceof Banner
+				|| state instanceof Bed
+				|| state instanceof Sign;
 	}
 
 	public void deletePortals(User user)
