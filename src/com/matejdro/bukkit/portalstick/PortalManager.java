@@ -170,7 +170,7 @@ public class PortalManager {
     {
         if (Tag.DOORS.isTagged(block.getType()))
             return true;
-        return !block.getState(false).getClass().equals(BlockState.class);
+        return block.getState(false) != null;
     }
 
 	public void deletePortals(User user)
@@ -347,7 +347,7 @@ public class PortalManager {
 			portalc = generatePortal(block, face);
 			if (!checkPortal(portalc))
 			{
-				if (end) plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
+				//if (end) plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
 				plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, block);
 				return false;
 			}
@@ -357,7 +357,7 @@ public class PortalManager {
 			portalc = generateHorizontalPortal(block, face);
 			if (portalc.finished)
 			{
-				if (end) plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
+				//if (end) plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
 				plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, block);
 				return false;
 			}
