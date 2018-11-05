@@ -132,13 +132,7 @@ public class Portal {
 //			bh = new BlockHolder(b);
 //			if(plugin.gelManager.gelMap.containsKey(bh))
 //			  plugin.gelManager.removeGel(bh);
-			b.setType(Material.END_GATEWAY, false);
-			plugin.getLogger().info(b.getBlockData().getAsString());
-			plugin.getLogger().info(b.getBlockData().getClass().getName());
-			Ageable ageable = (Ageable)b.getBlockData();
-			ageable.setAge(Integer.MIN_VALUE);
-			b.setBlockData(ageable, false);
-
+			b.setType(Material.AIR, false);
 			
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
 			 {			 				 
