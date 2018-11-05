@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -13,13 +12,11 @@ import org.bukkit.Warning;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
@@ -115,7 +112,7 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
-				if (nonoBlocks(block))
+				if (nonoBlock(block))
 					return false;
 			}
 		}
@@ -157,7 +154,7 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
 			  }
-				if (nonoBlocks(block))
+				if (nonoBlock(block))
 					return false;
 			}
 		}
@@ -166,12 +163,12 @@ public class PortalManager {
 		return true;
 	}
 
-	private boolean nonoBlocks(Block block)
+	private boolean nonoBlock(Block block)
     {
         if (Tag.DOORS.isTagged(block.getType()))
             return true;
-        return block.getState(false) != null;
-    }
+		return block.getState(false) != null && !block.getState(false).getClass().equals(BlockState.class);
+	}
 
 	public void deletePortals(User user)
 	{
