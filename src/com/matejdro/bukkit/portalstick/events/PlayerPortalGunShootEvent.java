@@ -5,6 +5,7 @@ import com.matejdro.bukkit.portalstick.User;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.Action;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Created by RoboMWM on 11/23/2016.
  */
-public class PlayerPortalGunShootEvent extends Event
+public class PlayerPortalGunShootEvent extends Event implements Cancellable
 {
     // Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();

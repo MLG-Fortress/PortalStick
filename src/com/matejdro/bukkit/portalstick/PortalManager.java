@@ -8,9 +8,11 @@ import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.Warning;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -113,6 +115,8 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
+				if (nonoBlocks(block))
+					return false;
 			}
 		}
 		for (V10Location loc: portal.inside)
@@ -153,12 +157,21 @@ public class PortalManager {
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
 			  }
+				if (nonoBlocks(block))
+					return false;
 			}
 		}
 		for(Portal p: overlap)
 		  p.delete();
 		return true;
 	}
+
+	private boolean nonoBlocks(Block block)
+    {
+        if (Tag.DOORS.isTagged(block.getType()))
+            return true;
+        return !block.getState(false).getClass().equals(BlockState.class);
+    }
 
 	public void deletePortals(User user)
 	{
@@ -316,9 +329,11 @@ public class PortalManager {
 		//or containers
 		if (loc.getY() > 255
 				|| region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(bBlock.getType().name())
-				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType())
-				|| bBlock.getState() instanceof Container)
-			return false;
+				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType()))
+        {
+            plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, block);
+            return false;
+        }
 		
 		boolean vertical = false;
 		

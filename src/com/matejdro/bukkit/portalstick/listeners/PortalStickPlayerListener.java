@@ -53,6 +53,7 @@ public class PortalStickPlayerListener implements Listener {
         }
 
 		nonSolidBlocks.add(Material.IRON_BARS);
+		nonSolidBlocks.add(Material.SPAWNER);
 
         //nonSolidBlocks.remove(Material.WATER);
         //nonSolidBlocks.remove(Material.STATIONARY_WATER);
@@ -175,7 +176,7 @@ public class PortalStickPlayerListener implements Listener {
 						if(p.inside[i] != null && p.inside[i].equals(loc))
 						{
 							//plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-							//plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
+							plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, loc);
 							return;
 						}
 					}
