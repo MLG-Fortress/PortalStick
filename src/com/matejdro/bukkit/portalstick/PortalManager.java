@@ -128,13 +128,12 @@ public class PortalManager {
 				if(plugin.gelManager.gelMap.containsKey(bh))
 				{
 				  bh = plugin.gelManager.gelMap.get(bh);
-				  id = bh.id;
 				}
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
-				if (nonoBlock(block))
-					return false;
+//				if (nonoBlock(block))
+//					return false;
 			}
 		}
 		for (V10Location loc: portal.inside)
@@ -170,7 +169,6 @@ public class PortalManager {
 				if(plugin.gelManager.gelMap.containsKey(bh))
 				{
 				  bh = plugin.gelManager.gelMap.get(bh);
-				  id = bh.id;
 				}
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
