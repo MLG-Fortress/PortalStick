@@ -10,6 +10,7 @@ import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
 import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
+import org.bukkit.block.EndGateway;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 
@@ -132,7 +133,8 @@ public class Portal {
 //			bh = new BlockHolder(b);
 //			if(plugin.gelManager.gelMap.containsKey(bh))
 //			  plugin.gelManager.removeGel(bh);
-			b.setType(Material.AIR, false);
+			b.setType(Material.END_GATEWAY, false);
+			((EndGateway)b.getState(false)).setAge(Long.MIN_VALUE);
 			
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
 			 {			 				 
