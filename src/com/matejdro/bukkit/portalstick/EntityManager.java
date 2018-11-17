@@ -267,7 +267,7 @@ public class EntityManager implements Runnable {
 						//translate yaw range to -180 - 180,
 						// get absolute value (we only care about player's facing angle to originating portal)
 						pitch = Math.abs(180 - yaw) - 90;
-						Bukkit.broadcastMessage(yaw + " " + pitch);
+						//Bukkit.broadcastMessage(yaw + " " + pitch);
 						yaw = startyaw;
 				}
         		outvector = outvector.setY(-momentum);
