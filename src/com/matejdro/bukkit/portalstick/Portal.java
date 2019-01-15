@@ -134,9 +134,7 @@ public class Portal {
 //			if(plugin.gelManager.gelMap.containsKey(bh))
 //			  plugin.gelManager.removeGel(bh);
 			b.setType(Material.END_GATEWAY, false);
-			EndGateway gateway = ((EndGateway)b.getState());
-			gateway.setAge(Long.MIN_VALUE);
-			gateway.update(false, false);
+			((EndGateway)b.getState(false)).setAge(Long.MIN_VALUE);
 			
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
 			 {			 				 
