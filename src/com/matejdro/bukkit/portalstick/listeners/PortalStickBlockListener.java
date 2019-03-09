@@ -255,13 +255,13 @@ public class PortalStickBlockListener implements Listener
 
 	private boolean nearPortalOpening(Location loc)
 	{
-		if(plugin.config.DisabledWorlds.contains(loc.getWorld().getName()))
-			return false;
+//		if(plugin.config.DisabledWorlds.contains(loc.getWorld().getName()))
+//			return false;
 		for (V10Location location : plugin.portalManager.insideBlocks.keySet())
 		{
 			if (loc.getWorld() != location.getHandle().getWorld())
 				continue;
-			if (loc.distanceSquared(location.getHandle()) <= 4)
+			if (loc.distanceSquared(location.getHandle()) <= 1)
 				return true;
 		}
 		return false;
@@ -271,8 +271,10 @@ public class PortalStickBlockListener implements Listener
 	public void onBlockPhysics(BlockPhysicsEvent event)
 	{
 		Block block = event.getBlock();
-		if(block.getType() != Material.SUGAR_CANE || plugin.config.DisabledWorlds.contains(block.getLocation().getWorld().getName()))
-		  return;
+//		if(block.getType() != Material.SUGAR_CANE || plugin.config.DisabledWorlds.contains(block.getLocation().getWorld().getName()))
+//		  return;
+		if(plugin.config.DisabledWorlds.contains(block.getLocation().getWorld().getName()))
+			return;
 //		V10Location loc = new V10Location(block);
 //		if(plugin.grillManager.insideBlocks.containsKey(loc))
 //		  event.setCancelled(true);
