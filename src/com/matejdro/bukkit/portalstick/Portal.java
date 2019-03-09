@@ -279,6 +279,14 @@ public class Portal {
         		plugin.portalManager.behindBlocks.put(loc, this);
         	}
     	}
+
+		V10Location oloc;
+		V10Location loc;
+		int i;
+		oloc = inside[0].clone();
+		plugin.portalManager.insideBlocks.put(inside[0], this);
+		if(inside[1] != null)
+			plugin.portalManager.insideBlocks.put(inside[1], this);
     	
     	if (getDestination() == null)
     	{
@@ -292,13 +300,7 @@ public class Portal {
     	}
     	
     	
-    	V10Location oloc;
-    	V10Location loc;
-    	int i;
-    	oloc = inside[0].clone();
-    	plugin.portalManager.insideBlocks.put(inside[0], this);
-    	if(inside[1] != null)
-    	  plugin.portalManager.insideBlocks.put(inside[1], this);
+
     	
     	if(horizontal)
     	{

@@ -277,7 +277,10 @@ public class PortalStickBlockListener implements Listener
 //		if(plugin.grillManager.insideBlocks.containsKey(loc))
 //		  event.setCancelled(true);
 		if (nearPortalOpening(event.getSourceBlock().getLocation()))
-		  event.setCancelled(true);
+		{
+			event.setCancelled(true);
+			plugin.getLogger().info("canceled at " + event.getSourceBlock().getLocation());
+		}
 	}
 	
 	@EventHandler(ignoreCancelled = true)
