@@ -3,6 +3,7 @@ package com.matejdro.bukkit.portalstick.listeners;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.destroystokyo.paper.event.player.PlayerTeleportEndGatewayEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -102,6 +103,12 @@ public class PortalStickEntityListener implements Listener {
 			}
 		}
 		return false;
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onEntityTeleportedByGateway(PlayerTeleportEndGatewayEvent event)
+	{
+		event.setCancelled(isNearPortal(event.getGateway().getLocation()));
 	}
 	
 	@EventHandler(ignoreCancelled = true)

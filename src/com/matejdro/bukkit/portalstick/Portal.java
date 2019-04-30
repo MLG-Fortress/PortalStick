@@ -136,8 +136,7 @@ public class Portal {
 			b.setType(Material.END_GATEWAY, false);
 			EndGateway endGateway = (EndGateway)b.getState(false);
 			endGateway.setAge(Long.MIN_VALUE);
-			endGateway.setExitLocation(null);
-			
+
 			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
 			 {			 				 
 				 for (int i = 0; i < 4; i++)
