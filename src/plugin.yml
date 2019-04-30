@@ -1,9 +1,9 @@
 name: PortalStick
 main: com.matejdro.bukkit.portalstick.PortalStick
-version: ${project.version}
+version: ${project.version} commit ${git.commit.id.abbrev}
 authors: [matejdro, oliverw92, V10lator]
 softdepend: [WorldGuard]
-api-version: 1.13
+api-version: '1.13'
 commands:
   portalstick:
     description: Aperture Science Portal Stick
