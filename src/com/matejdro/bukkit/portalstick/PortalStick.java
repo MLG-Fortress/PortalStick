@@ -104,7 +104,7 @@ public class PortalStick extends JavaPlugin {
 		tmpList.add(new RegionInfoCommand(this));
 		tmpList.add(new LanguageCommand(this));
 		commands = tmpList.toArray(new BaseCommand[0]);
-		new Metrics(this);
+		new Metrics(this, 3499);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[])
