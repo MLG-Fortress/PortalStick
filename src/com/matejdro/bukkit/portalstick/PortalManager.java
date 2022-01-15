@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -18,6 +19,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -29,7 +31,6 @@ import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
 import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
-import org.bukkit.material.Bed;
 
 public class PortalManager {
 	private PortalStick plugin;
@@ -382,8 +383,7 @@ public class PortalManager {
 		Location loc = block.getHandle();
 		Block bBlock = loc.getBlock();
 		Region region = plugin.regionManager.getRegion(block);
-		if (region.getBoolean(RegionSetting.CHECK_WORLDGUARD) && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, loc))
-			return false;
+
 		if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
 			return false;
 		//RoboMWM: Don't allow player to put portal on transparent blocks
@@ -402,7 +402,7 @@ public class PortalManager {
 		PortalCoord portalc;
 		
 		User owner = plugin.userManager.getUser(player);
-		
+
 		if (face == BlockFace.DOWN || face == BlockFace.UP)
 		{
 			vertical = true;
@@ -424,7 +424,7 @@ public class PortalManager {
 				return false;
 			}
 		}
-		
+
 		Portal portal = new Portal(plugin, portalc.destLoc, portalc.block, portalc.border, portalc.inside, portalc.behind, owner, orange, vertical, portalc.tpFace);
 		
 		
@@ -447,7 +447,6 @@ public class PortalManager {
 		portals.add(portal);
 		region.portals.add(portal);
 		portal.create();
-		
 		return true;
 		
 	}

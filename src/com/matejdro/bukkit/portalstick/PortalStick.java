@@ -30,7 +30,6 @@ import com.matejdro.bukkit.portalstick.listeners.PortalStickVehicleListener;
 import com.matejdro.bukkit.portalstick.util.BlockUtil;
 import com.matejdro.bukkit.portalstick.util.Config;
 import com.matejdro.bukkit.portalstick.util.Util;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import de.V10lator.PortalStick.I18n;
 
@@ -48,8 +47,7 @@ public class PortalStick extends JavaPlugin {
 	public final RegionManager regionManager = new RegionManager(this);
 	public UserManager userManager;
 
-	public WorldGuardPlugin worldGuard = null;
-	
+
 	//public final Util util = new Util(this);
 	public Util util;
 	public final BlockUtil blockUtil = new BlockUtil();
@@ -80,8 +78,7 @@ public class PortalStick extends JavaPlugin {
 		pm.registerEvents(new PortalStickVehicleListener(this), this);
 		pm.registerEvents(eL, this);
 		
-		worldGuard = (WorldGuardPlugin) pm.getPlugin("WorldGuard");
-		
+
 		config.load();
 		i18n = new I18n(this, getFile());
 		
@@ -104,7 +101,7 @@ public class PortalStick extends JavaPlugin {
 		tmpList.add(new RegionInfoCommand(this));
 		tmpList.add(new LanguageCommand(this));
 		commands = tmpList.toArray(new BaseCommand[0]);
-		new Metrics(this);
+		//new Metrics(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String args[])

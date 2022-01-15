@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.matejdro.bukkit.portalstick.events.PlayerPortalGunShootEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -124,8 +125,7 @@ public class PortalStickPlayerListener implements Listener {
 				if(Tag.BUTTONS.isTagged(mat) || mat == Material.LEVER)
 					return;
 			}
-			
-			
+
 			event.setCancelled(true);
 			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
 //			HashSet<String> tb = new HashSet<>();
@@ -139,9 +139,6 @@ public class PortalStickPlayerListener implements Listener {
 //            }
 
 
-			
-			if (region.getBoolean(RegionSetting.CHECK_WORLDGUARD) && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, player.getLocation().getBlock()))
-				return;
 			if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
 				return;
 
@@ -157,7 +154,6 @@ public class PortalStickPlayerListener implements Listener {
                 transparentMaterials.addAll(nonSolidBlocks);
             }
 
-
 			List<Block> targetBlocks = event.getPlayer().getLineOfSight(transparentMaterials, 120);
 			if (targetBlocks.isEmpty())
 				return;
@@ -165,7 +161,7 @@ public class PortalStickPlayerListener implements Listener {
 			boolean orange = false;
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
 				orange = true;
-			
+
 			V10Location loc;
 			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_THROUGH_PORTAL))
 			{
@@ -187,7 +183,7 @@ public class PortalStickPlayerListener implements Listener {
 					}
 				}
 			}
-			
+
 //			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_CLOSED_DOOR))
 //			{
 //				for (Block b : targetBlocks)
