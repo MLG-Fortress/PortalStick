@@ -14,11 +14,11 @@
     <repositories>
         <repository>
             <id>purpur</id>
-            <url>https://repo.pl3x.net/</url>
+            <url>https://repo.purpurmc.org/snapshots/</url>
         </repository>
         <repository>
             <id>worldedit-worldguard-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
+            <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
             <id>CodeMC</id>
@@ -103,7 +103,7 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>net.pl3x.purpur</groupId>
+            <groupId>org.purpurmc.purpur</groupId>
             <artifactId>purpur-api</artifactId>
             <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
