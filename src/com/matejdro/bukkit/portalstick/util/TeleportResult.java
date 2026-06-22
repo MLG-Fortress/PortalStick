@@ -1,4 +1,4 @@
-package de.V10lator.PortalStick;
+package com.matejdro.bukkit.portalstick.util;
 
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -9,12 +9,12 @@ import org.bukkit.util.Vector;
  * @author V10lator
  *
  */
-public class V10Teleport
+public class TeleportResult
 {
   public final Location to;
   public final Vector velocity;
   
-  public V10Teleport(Location to, Vector velocity)
+  public TeleportResult(Location to, Vector velocity)
   {
 	this.to = to;
 	this.velocity = velocity;

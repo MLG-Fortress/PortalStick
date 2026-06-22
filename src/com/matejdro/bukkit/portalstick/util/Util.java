@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
 
-import de.V10lator.PortalStick.V10Location;
+import com.matejdro.bukkit.portalstick.util.BlockLocation;
 
 public class Util {
 	private final PortalStick plugin;
@@ -75,9 +75,9 @@ public class Util {
     	return str;
     }
     
-    public void playSound(Sound sound, V10Location loc)
+    public void playSound(Sound sound, BlockLocation loc)
 	{
-		if (!plugin.regionManager.getRegion(loc).getBoolean(RegionSetting.ENABLE_SOUNDS))
+		if (!plugin.config.getBoolean(PortalSetting.ENABLE_SOUNDS))
 			return;
 
 		if (plugin.config.useNativeSounds)

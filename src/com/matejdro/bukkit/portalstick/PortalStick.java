@@ -14,15 +14,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.matejdro.bukkit.portalstick.commands.BaseCommand;
 import com.matejdro.bukkit.portalstick.commands.DeleteAllCommand;
 import com.matejdro.bukkit.portalstick.commands.DeleteCommand;
-import com.matejdro.bukkit.portalstick.commands.DeleteRegionCommand;
-import com.matejdro.bukkit.portalstick.commands.FlagCommand;
 import com.matejdro.bukkit.portalstick.commands.HelpCommand;
 import com.matejdro.bukkit.portalstick.commands.LanguageCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionInfoCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionListCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionToolCommand;
 import com.matejdro.bukkit.portalstick.commands.ReloadCommand;
-import com.matejdro.bukkit.portalstick.commands.SetRegionCommand;
+import com.matejdro.bukkit.portalstick.listeners.PortalEntitiesListener;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickBlockListener;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickEntityListener;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
@@ -31,7 +26,7 @@ import com.matejdro.bukkit.portalstick.util.BlockUtil;
 import com.matejdro.bukkit.portalstick.util.Config;
 import com.matejdro.bukkit.portalstick.util.Util;
 
-import de.V10lator.PortalStick.I18n;
+import com.matejdro.bukkit.portalstick.util.I18n;
 
 public class PortalStick extends JavaPlugin {
 	
@@ -40,11 +35,8 @@ public class PortalStick extends JavaPlugin {
 	public I18n i18n;
 	
 	public final EntityManager entityManager = new EntityManager(this);
-	public final FunnelBridgeManager funnelBridgeManager = new FunnelBridgeManager(this);
-	public final GelManager gelManager = new GelManager(this);
-	public final GrillManager grillManager = new GrillManager(this);
 	public final PortalManager portalManager = new PortalManager(this);
-	public final RegionManager regionManager = new RegionManager(this);
+
 	public UserManager userManager;
 
 
@@ -76,6 +68,7 @@ public class PortalStick extends JavaPlugin {
 		pm.registerEvents(new PortalStickPlayerListener(this), this);
 		pm.registerEvents(new PortalStickBlockListener(this), this);
 		pm.registerEvents(new PortalStickVehicleListener(this), this);
+		pm.registerEvents(new PortalEntitiesListener(this), this);
 		pm.registerEvents(eL, this);
 		
 
@@ -89,16 +82,10 @@ public class PortalStick extends JavaPlugin {
 		
 		//Register commands
 		ArrayList<BaseCommand> tmpList = new ArrayList<BaseCommand>();
-		tmpList.add(new RegionToolCommand(this));
-		tmpList.add(new SetRegionCommand(this));
 		tmpList.add(new ReloadCommand(this));
 		tmpList.add(new DeleteAllCommand(this));
 		tmpList.add(new DeleteCommand(this));
 		tmpList.add(new HelpCommand(this));
-		tmpList.add(new RegionListCommand(this));
-		tmpList.add(new DeleteRegionCommand(this));
-		tmpList.add(new FlagCommand(this));
-		tmpList.add(new RegionInfoCommand(this));
 		tmpList.add(new LanguageCommand(this));
 		commands = tmpList.toArray(new BaseCommand[0]);
 		//new Metrics(this);
@@ -115,14 +102,8 @@ public class PortalStick extends JavaPlugin {
 		return false;
 	}
 	
-	public final String PERM_CREATE_BRIDGE	= "portalstick.createbridge";
-	public final String PERM_CREATE_GRILL	= "portalstick.creategrill";
 	public final String PERM_PLACE_PORTAL	= "portalstick.placeportal";
 	public final String PERM_DELETE_ALL		= "portalstick.admin.deleteall";
-	public final String PERM_ADMIN_REGIONS	= "portalstick.admin.regions";
-	public final String PERM_DELETE_BRIDGE	= "portalstick.deletebridge";
-	public final String PERM_DELETE_GRILL	= "portalstick.deletegrill";
-	public final String PERM_DAMAGE_BOOTS	= "portalstick.damageboots";
 	public final String PERM_TELEPORT 		= "portalstick.teleport";
 	public final String PERM_LANGUAGE		= "portalstick.language";
     

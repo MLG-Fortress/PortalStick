@@ -1,4 +1,4 @@
-package de.V10lator.PortalStick;
+package com.matejdro.bukkit.portalstick.util;
 
 import java.io.File;
 import java.io.FileOutputStream;

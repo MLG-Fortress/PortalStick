@@ -1,4 +1,4 @@
-package de.V10lator.PortalStick;
+package com.matejdro.bukkit.portalstick.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,22 +11,22 @@ import org.bukkit.block.Block;
  * @author V10lator
  *
  */
-public class V10Location
+public class BlockLocation
 {
   public final String world;
   public final int x, y, z;
   
-  public V10Location(Location loc)
+  public BlockLocation(Location loc)
   {
 	this(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
   }
   
-  public V10Location(Block block)
+  public BlockLocation(Block block)
   {
 	this(block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
   }
   
-  public V10Location(String world, int x, int y, int z)
+  public BlockLocation(String world, int x, int y, int z)
   {
 	this.world = world;
 	this.x = x;
@@ -57,15 +57,15 @@ public class V10Location
   {
 	if(this == obj)
 	  return true;
-	if(obj == null || !(obj instanceof V10Location))
+	if(obj == null || !(obj instanceof BlockLocation))
 	  return false;
-	V10Location other = (V10Location)obj;
+	BlockLocation other = (BlockLocation)obj;
 	return x == other.x && y == other.y && z == other.z && world.equals(other.world);
   }
   
   @Override
-  public V10Location clone()
+  public BlockLocation clone()
   {
-	return new V10Location(world, x, y, z);
+	return new BlockLocation(world, x, y, z);
   }
 }

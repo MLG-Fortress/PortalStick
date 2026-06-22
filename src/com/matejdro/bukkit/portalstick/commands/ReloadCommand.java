@@ -17,6 +17,6 @@ public class ReloadCommand extends BaseCommand {
 	}
 	
 	public boolean permission(Player player) {
-		return plugin.hasPermission(player, plugin.PERM_ADMIN_REGIONS);
+		return plugin.hasPermission(player, plugin.PERM_DELETE_ALL);
 	}
 }

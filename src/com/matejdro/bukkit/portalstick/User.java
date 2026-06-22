@@ -11,15 +11,15 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import de.V10lator.PortalStick.V10Location;
+import com.matejdro.bukkit.portalstick.util.BlockLocation;
 
 public class User {
 	public Portal bluePortal;
 	public Portal orangePortal;
 	private ItemStack[] inventory;
 	private ItemStack[] armor;
-	public V10Location pointOne;
-	public V10Location pointTwo;
+	public BlockLocation pointOne;
+	public BlockLocation pointTwo;
 	public boolean usingTool = false;
 	public int colorPreset = 0;
 	public final String name;

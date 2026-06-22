@@ -1,16 +1,16 @@
-package de.V10lator.PortalStick;
+package com.matejdro.bukkit.portalstick.util;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
-public class BlockHolder
+public class SavedBlock
 {
-  private final V10Location loc;
+  private final BlockLocation loc;
   public BlockData data;
   
-  public BlockHolder(Block block)
+  public SavedBlock(Block block)
   {
-	loc = new V10Location(block);
+	loc = new BlockLocation(block);
 	data = block.getBlockData();
   }
   
@@ -29,8 +29,8 @@ public class BlockHolder
   @Override
   public boolean equals(Object obj)
   {
-	if(obj == null || !(obj instanceof BlockHolder))
+	if(obj == null || !(obj instanceof SavedBlock))
 	  return false;
-	return loc.equals(((BlockHolder)obj).loc);
+	return loc.equals(((SavedBlock)obj).loc);
   }
 }

@@ -21,10 +21,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
-import com.matejdro.bukkit.portalstick.util.RegionSetting;
+import com.matejdro.bukkit.portalstick.util.PortalSetting;
 
-import de.V10lator.PortalStick.V10Location;
-import de.V10lator.PortalStick.V10Teleport;
+import com.matejdro.bukkit.portalstick.util.BlockLocation;
+import com.matejdro.bukkit.portalstick.util.TeleportResult;
 
 public class EntityManager implements Runnable {
 	private final PortalStick plugin;
@@ -36,12 +36,12 @@ public class EntityManager implements Runnable {
 		plugin = instance;
 	}
 
-	public V10Teleport teleport(Entity entity, Location oloc, V10Location locTo, Vector vector, boolean really)
+	public TeleportResult teleport(Entity entity, Location oloc, BlockLocation locTo, Vector vector, boolean really)
 	{
 		if (entity == null || entity.isDead() || blockedEntities.contains(entity))
 		  return null;
 
-		Region regionTo = plugin.regionManager.getRegion(locTo);
+
 		Portal portal = plugin.portalManager.insideBlocks.get(locTo);
 		final Location teleport;
 		final Portal destination;
@@ -197,7 +197,7 @@ public class EntityManager implements Runnable {
 
 	    yaw = (yaw + 360) % 360;
 		momentum = Math.abs(momentum);
-		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
+		momentum *= plugin.config.getDouble(PortalSetting.VELOCITY_MULTIPLIER);
 			//reposition velocity to match output portal's orientation
 			//Also sets direction (yaw and/or pitch) relative to portal
 		Vector outvector = entity.getVelocity().zero();
@@ -317,9 +317,9 @@ public class EntityManager implements Runnable {
 		final boolean orange = portal.orange;
 
         if (orange)
-            plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new V10Location(oloc));
+            plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new BlockLocation(oloc));
         else
-            plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new V10Location(oloc));
+            plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new BlockLocation(oloc));
 
 
 		//Delay playing the sound by a tick so the player exiting will hear it
@@ -331,18 +331,18 @@ public class EntityManager implements Runnable {
 			{
 				if (orange)
 				{
-					plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new V10Location(teleport));
-					plugin.util.playSound(Sound.PORTAL_EXIT_ORANGE, new V10Location(teleport));
+					plugin.util.playSound(Sound.PORTAL_ENTER_ORANGE, new BlockLocation(teleport));
+					plugin.util.playSound(Sound.PORTAL_EXIT_ORANGE, new BlockLocation(teleport));
 				}
 				else
 				{
-					plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new V10Location(teleport));
-					plugin.util.playSound(Sound.PORTAL_EXIT_BLUE, new V10Location(teleport));
+					plugin.util.playSound(Sound.PORTAL_ENTER_BLUE, new BlockLocation(teleport));
+					plugin.util.playSound(Sound.PORTAL_EXIT_BLUE, new BlockLocation(teleport));
 				}
 			}
 		}.runTask(plugin);
 
-		return new V10Teleport(teleport, outvector);
+		return new TeleportResult(teleport, outvector);
 	}
 	
 	@Override
@@ -351,7 +351,7 @@ public class EntityManager implements Runnable {
 		faceCache.clear();
 	}
 	
-	HashMap<V10Location, HashMap<BlockFace, Block>> faceCache = new HashMap<V10Location, HashMap<BlockFace, Block>>();
+	HashMap<BlockLocation, HashMap<BlockFace, Block>> faceCache = new HashMap<BlockLocation, HashMap<BlockFace, Block>>();
 	
 	public Location onEntityMove(final Entity entity, Location locFrom, Location locTo, boolean tp)
 	{
@@ -364,114 +364,31 @@ public class EntityManager implements Runnable {
 
 		//TODO: may need to check world/try-catch?
 		Vector vec2 = locTo.toVector();
-		V10Location vlocTo = new V10Location(locTo);
+		BlockLocation vlocTo = new BlockLocation(locTo);
 		Location oloc = locTo;
 		locTo = vlocTo.getHandle();
 		Vector vec1 = locFrom.toVector();
-		V10Location vlocFrom = new V10Location(locFrom);
+		BlockLocation vlocFrom = new BlockLocation(locFrom);
 		if(vlocTo.equals(vlocFrom))
 		  return null;
 		
 	    Vector vector = vec2.subtract(vec1);
 	    vector.setY(entity.getVelocity().getY());
 	    
-	    Region regionTo = plugin.regionManager.getRegion(vlocTo);
-		Region regionFrom = plugin.regionManager.getRegion(vlocFrom);
+
 		
-		//Check for changing regions
-	    plugin.portalManager.checkEntityMove(entity, regionFrom, regionTo);
-		
-		//Emancipation grill
-		if (regionTo.getBoolean(RegionSetting.ENABLE_GRILLS))
-		{
-			Grill grill = plugin.grillManager.insideBlocks.get(vlocTo);
-			if (grill != null && !grill.disabled)
-			{
-				plugin.grillManager.emancipate(entity);
-				return null;
-			}
-		}
-		
-		//Aerial faith plate
-		Block blockIn = locTo.getBlock();
-		HashMap<BlockFace, Block> faceMap;
-		if(faceCache.containsKey(vlocTo))
-		  faceMap = faceCache.get(vlocTo);
-		else
-		{
-		  faceMap = new HashMap<BlockFace, Block>();
-		  faceCache.put(vlocTo, faceMap);
-		}
-		Block blockUnder;
-		if(faceMap.containsKey(BlockFace.DOWN))
-		  blockUnder = faceMap.get(BlockFace.DOWN);
-		else
-		{
-		  blockUnder = blockIn.getRelative(BlockFace.DOWN);
-		  faceMap.put(BlockFace.DOWN, blockUnder);
-		}
-		  
-		//  blockUnder = blockIn.getRelative(BlockFace.DOWN);
-		  
-		if (regionTo.getBoolean(RegionSetting.ENABLE_AERIAL_FAITH_PLATES))
-		{
-			Block blockStart = null;
-			d = Double.parseDouble(regionTo.getString(RegionSetting.FAITH_PLATE_POWER).split("-")[0]);
-			String faithBlock = regionTo.getString(RegionSetting.FAITH_PLATE_BLOCK);
-			Vector velocity = new Vector(0, Double.parseDouble(regionTo.getString(RegionSetting.FAITH_PLATE_POWER).split("-")[1]),0);
-			
-			if (blockIn.getType() == Material.STONE_PRESSURE_PLATE && plugin.blockUtil.compareBlockToString(blockUnder, faithBlock))
-				blockStart = blockUnder;
-			else
-				blockStart = blockIn;
-			if (blockStart != null) {
-				BlockFace[] faces = new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
-				BlockFace face = plugin.blockUtil.getFaceOfMaterial(blockStart, faces, faithBlock, faceMap);
-				if (face != null) {
-					switch (face) {
-						case NORTH:
-							velocity.setX(d);
-							break;
-						case SOUTH:
-							velocity.setX(-d);
-							break;
-						case EAST:
-							velocity.setZ(d);
-							break;
-						case WEST:
-							velocity.setZ(-d);
-							break;
-					}
-					if (blockStart == blockUnder) {
-						velocity.setX(-velocity.getX());
-						velocity.setZ(-velocity.getZ());
-					}
-					entity.setVelocity(velocity);
-					plugin.util.playSound(Sound.FAITHPLATE_LAUNCH, new V10Location(blockStart.getLocation()));
-					return null;
-				}
-			}
-		
-		}
 		Location ret = null;
 		//Teleport
 		if (!(entity instanceof Player) || plugin.hasPermission((Player)entity, plugin.PERM_TELEPORT))
 		{
-		  final V10Teleport to = teleport(entity, oloc, vlocTo, vector, tp);
+		  final TeleportResult to = teleport(entity, oloc, vlocTo, vector, tp);
 		  if(to != null)
 		  {
 			ret = to.to;
-			vlocTo = new V10Location(ret);
+			vlocTo = new BlockLocation(ret);
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){public void run(){entity.setVelocity(to.velocity);}});
 		  }
 		}
-		
-		//Gel
-		if(!plugin.gelManager.flyingGels.containsKey(entity.getUniqueId()))
-		  plugin.gelManager.useGel(entity, vlocTo, vector, blockIn, blockUnder, faceMap);
-		
-		//Funnel
-//		plugin.funnelBridgeManager.EntityMoveCheck(entity);
 		
 		return ret;
 	}

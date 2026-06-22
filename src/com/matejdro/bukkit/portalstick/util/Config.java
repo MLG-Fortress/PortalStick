@@ -18,33 +18,22 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.matejdro.bukkit.portalstick.Bridge;
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
-import com.matejdro.bukkit.portalstick.Region;
 
-import de.V10lator.PortalStick.V10Location;
+import com.matejdro.bukkit.portalstick.util.BlockLocation;
 
 public class Config {
 	
 	private final PortalStick plugin;
 	private final FileConfiguration mainConfig;
-	private final FileConfiguration regionConfig;
-	private final FileConfiguration grillConfig;
-	private final FileConfiguration bridgeConfig;
-	
 	private final File mainConfigFile;
-	private final File regionConfigFile;
-	private final File grillConfigFile;
-	private final File bridgeConfigFile;
 	
 	public HashSet<String> DisabledWorlds;
 	public Material PortalTool;
 	//public short portalToolData; //Short for spout compatiblity!
 	public boolean CompactPortal;
-	public Region GlobalRegion;
-	public int RegionTool;
+
 	public boolean RestoreInvOnWorldChange;
 	public List<String> ColorPresets;
 	public Material FillPortalBack;
@@ -61,43 +50,12 @@ public class Config {
 		plugin = instance;
 		
 		mainConfigFile = getConfigFile("config.yml");
-		regionConfigFile = getConfigFile("regions.yml");
-		grillConfigFile = getConfigFile("grills.yml");
-		bridgeConfigFile = getConfigFile("bridges.yml");
-		
 		
 		mainConfig = getConfig(mainConfigFile);
-		regionConfig = getConfig(regionConfigFile);
-		grillConfig = getConfig(grillConfigFile);
-		bridgeConfig = getConfig(bridgeConfigFile);
-	}
-	
-	public void deleteGrill(String grill) {
-		List<String> list =  grillConfig.getStringList("grills");
-		list.remove(grill);
-		grillConfig.set("grills", list);
-		saveAll();
-	}
-	
-	public void deleteRegion(String name) {
-		regionConfig.set(name, null);
-		saveAll();
-	}
-	
-	public void deleteBridge(String bridge) {
-		List<String> list = bridgeConfig.getStringList("bridges");
-		list.remove(bridge);
-		bridgeConfig.set("bridges", list);
-		saveAll();
-	}
-
-	
+	}	
 	public void load() {
 		try {
 			mainConfig.load(mainConfigFile);
-			regionConfig.load(regionConfigFile);
-			grillConfig.load(grillConfigFile);
-			bridgeConfig.load(bridgeConfigFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -110,7 +68,6 @@ public class Config {
         DisabledWorlds = new HashSet<String>(getStringList("main.disabled-worlds", new ArrayList<String>()));
         PortalTool = Material.matchMaterial(getString("main.portal-tool", "DIAMOND_HORSE_ARMOR"));
         CompactPortal = getBoolean("main.compact-portal", false);
-        //RegionTool = getInt("main.region-tool", 268);
         RestoreInvOnWorldChange = getBoolean("main.restore-inventory-on-world-change", true);
         ColorPresets = getStringList("main.portal-color-presets", Arrays.asList(new String[]{"3-1","2-6","9-10","5-13","8-7","15-4"}));
         FillPortalBack = Material.matchMaterial(getString("main.fill-portal-back", "AIR"));
@@ -124,9 +81,6 @@ public class Config {
         soundNative[Sound.PORTAL_ENTER_BLUE.ordinal()] = getString("sounds.minecraft.enter-blue-portal", "fortress.portal.enter:0.3");
         soundNative[Sound.PORTAL_ENTER_ORANGE.ordinal()] = getString("sounds.minecraft.enter-orange-portal", "fortress.portal.enter:0.3");
         soundNative[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.minecraft.cannot-create-portal", "");
-        soundNative[Sound.GRILL_EMANCIPATE.ordinal()] = getString("sounds.minecraft.grill-emancipate", "FIZZ");
-        soundNative[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.minecraft.faith-plate-launch", "EXPLODE:0.5");
-        soundNative[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.minecraft.blue-gel-bounce", "SLIME_WALK2");
         
         useSpoutSounds = getBoolean("sounds.use-spout-sounds", false);
         
@@ -135,9 +89,6 @@ public class Config {
         soundUrls[Sound.PORTAL_EXIT_BLUE.ordinal()] = getString("sounds.spout.exit-blue-portal-url", "");
         soundUrls[Sound.PORTAL_EXIT_ORANGE.ordinal()] = getString("sounds.spout.exit-orange-portal-url", "");
         soundUrls[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.spout.cannot-create-portal-url", "");
-        soundUrls[Sound.GRILL_EMANCIPATE.ordinal()] = getString("sounds.spout.grill-emancipate-url", "");
-        soundUrls[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.spout.faith-plate-launch-url", "");
-        soundUrls[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.spout.blue-gel-bounce-url", "");
         
         soundRange = getInt("sounds.sound-range", 20);
         
@@ -148,26 +99,7 @@ public class Config {
 //		for (Player player : plugin.getServer().getOnlinePlayers())
 //			plugin.userManager.createUser(player);
 		
-        //Load all regions
-        for (String regionName : regionConfig.getKeys(false))
-        	if(!regionName.equals("global"))
-        		plugin.regionManager.loadRegion(regionName);
-        plugin.regionManager.loadRegion("global");
-        plugin.getLogger().info(plugin.regionManager.regions.size() + " region(s) loaded");
-        
-        //Validate regions
-        for(Region region: plugin.regionManager.regions.values())
-        	if(!region.validateRedGel())
-        		plugin.getLogger().info("Inavlid red-gel-max-velocity for region \""+region.name+"\" - fixing!");
-        
-        //Load grills
-        for (String grill : (grillConfig.getStringList("grills")))
-        	plugin.grillManager.loadGrill(grill);
-        plugin.getLogger().info(plugin.grillManager.grills.size() + " grill(s) loaded");
-        //Load bridges
-        for (String bridge : bridgeConfig.getStringList("bridges"))
-        	plugin.funnelBridgeManager.loadBridge(bridge);
-        plugin.getLogger().info(plugin.funnelBridgeManager.bridges.size() + " bridge(s) loaded");
+
         
         saveAll();
 	}
@@ -212,27 +144,27 @@ public class Config {
 	
 	public void unLoad()
 	{
-		for(World world: plugin.getServer().getWorlds())
-		  for(Chunk c: world.getLoadedChunks())
-		plugin.funnelBridgeManager.deleteAll();
 		for(Portal p: plugin.portalManager.portals.toArray(new Portal[0]))
 			p.delete();
 		plugin.portalManager.portals.clear();
-		plugin.grillManager.deleteAll();
-		for(V10Location loc: plugin.gelManager.gels.keySet())
-		  plugin.gelManager.stopGelTube(loc);
 	}
 	
-	public void loadRegionSettings(Region region) {
-		for (RegionSetting setting : RegionSetting.values()) {
-			Object prop = regionConfig.get(region.name + "." + setting.getYaml());
-    		if (prop == null)
-    			region.settings.put(setting, setting.getDefault());
-    		else
-    			region.settings.put(setting, prop);
-    		regionConfig.set(region.name + "." + setting.getYaml(), region.settings.get(setting));
-    	}
-		region.updateLocation();
+	public boolean getBoolean(PortalSetting setting) {
+		return getBoolean("settings." + setting.getYaml(), (Boolean) setting.getDefault());
+	}
+	public int getInt(PortalSetting setting) {
+		return getInt("settings." + setting.getYaml(), (Integer) setting.getDefault());
+	}
+	public List<?> getList(PortalSetting setting) {
+		return getStringList("settings." + setting.getYaml(), (List<String>) setting.getDefault());
+	}
+	public String getString(PortalSetting setting) {
+		return getString("settings." + setting.getYaml(), (String) setting.getDefault());
+	}
+	public double getDouble(PortalSetting setting) {
+		if (mainConfig.get("settings." + setting.getYaml()) == null)
+			mainConfig.set("settings." + setting.getYaml(), setting.getDefault());
+		return mainConfig.getDouble("settings." + setting.getYaml(), (Double) setting.getDefault());
 	}
 	
 	private File getConfigFile(String filename)
@@ -262,50 +194,7 @@ public class Config {
 	
 	public void saveAll() {
 		
-		//Save regions
-		for (Map.Entry<String, Region> entry : plugin.regionManager.regions.entrySet()) {
-			Region region = entry.getValue();
-			for (Entry<RegionSetting, Object> setting : region.settings.entrySet())
-				regionConfig.set(region.name + "." + setting.getKey().getYaml(), setting.getValue());
-		}
-		try
-		{
-			regionConfig.save(regionConfigFile);
-		}
-		catch (Exception ex)
-		{
-			plugin.getLogger().severe("Error while writing to regions.yml");
-		}
-		
-		//Save grills
-		grillConfig.set("grills", null);
-		List<String> list = new ArrayList<String>();
-		for (Grill grill : plugin.grillManager.grills)
-			list.add(grill.getStringLocation());
-		grillConfig.set("grills", list);
-		try
-		{
-			grillConfig.save(grillConfigFile);
-		}
-		catch (Exception ex)
-		{
-			plugin.getLogger().severe("Error while writing to grills.yml");
-		}
-		
-		//Save bridges
-		bridgeConfig.set("bridges", null);
-		list = new ArrayList<String>();
-		for (Bridge bridge : plugin.funnelBridgeManager.bridges)
-			list.add(bridge.getStringLocation());
-		bridgeConfig.set("bridges", list);
-		try
-		{
-			bridgeConfig.save(bridgeConfigFile);
-		}
-		catch (Exception ex)
-		{
-			plugin.getLogger().severe("Error while writing to bridges.yml");
-		}
+
 		
 		//Save main
 		mainConfig.set("Language", lang);
@@ -327,10 +216,7 @@ public class Config {
 		PORTAL_EXIT_ORANGE,
 		PORTAL_ENTER_BLUE,
         PORTAL_ENTER_ORANGE,
-		PORTAL_CANNOT_CREATE,
-		GRILL_EMANCIPATE,
-		FAITHPLATE_LAUNCH,
-		GEL_BLUE_BOUNCE
+		PORTAL_CANNOT_CREATE
 	}
 	
 }
