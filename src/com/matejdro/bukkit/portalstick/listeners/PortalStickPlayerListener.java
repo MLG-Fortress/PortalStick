@@ -276,6 +276,8 @@ public class PortalStickPlayerListener implements Listener {
 	void onPlayerJoin(PlayerJoinEvent event)
 	{
 		plugin.userManager.createUser(event.getPlayer());
+		for (Portal portal : plugin.portalManager.portals)
+			portal.sendPortalVisuals(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
