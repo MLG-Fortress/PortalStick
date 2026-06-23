@@ -100,6 +100,7 @@ public class Config {
 //			plugin.userManager.createUser(player);
 		
 
+		initializePortalSettings();
         
         saveAll();
 	}
@@ -162,11 +163,26 @@ public class Config {
 		return getString("settings." + setting.getYaml(), (String) setting.getDefault());
 	}
 	public double getDouble(PortalSetting setting) {
-		if (mainConfig.get("settings." + setting.getYaml()) == null)
-			mainConfig.set("settings." + setting.getYaml(), setting.getDefault());
-		return mainConfig.getDouble("settings." + setting.getYaml(), (Double) setting.getDefault());
+		return getDouble("settings." + setting.getYaml(), (Double) setting.getDefault());
 	}
-	
+
+	private double getDouble(String path, double def)
+	{
+		if (mainConfig.get(path) == null)
+			mainConfig.set(path, def);
+
+		return mainConfig.getDouble(path, def);
+	}
+
+	private void initializePortalSettings()
+	{
+		for (PortalSetting setting : PortalSetting.values()) {
+			String path = "settings." + setting.getYaml();
+			if (mainConfig.get(path) == null)
+				mainConfig.set(path, setting.getDefault());
+		}
+	}
+
 	private File getConfigFile(String filename)
 	{
 		if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdir();
