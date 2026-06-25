@@ -240,14 +240,6 @@ public class PortalEntitiesListener implements Listener
             }
         }
 
-        for (Portal portal : portalStick.portalManager.portals)
-        {
-            for (Player player : event.getWorld().getPlayers())
-            {
-                portal.sendPortalVisuals(player);
-            }
-            break;
-        }
     }
 
 }

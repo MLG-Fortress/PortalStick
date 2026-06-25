@@ -267,14 +267,16 @@ public class PortalStickPlayerListener implements Listener {
 	{
 	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))
 		return;
-	  Location to = plugin.entityManager.onEntityMove(event.getPlayer(), event.getFrom(), event.getTo(), false);
-	  if(to != null)
-		event.setTo(to);
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	void onPlayerJoin(PlayerJoinEvent event)
-	{
+    Location from = event.getFrom();
+    Location to = event.getTo();
+    if (to != null && (from.getWorld() != to.getWorld() || from.getChunk() != to.getChunk()))
+    {
+      for (Portal portal : plugin.portalManager.portals)
+        portal.sendPortalVisuals(event.getPlayer());
+    }
+    Location teleport = plugin.entityManager.onEntityMove(event.getPlayer(), from, to, false);
+    if(teleport != null)
+      event.setTo(teleport);
 		plugin.userManager.createUser(event.getPlayer());
 		for (Portal portal : plugin.portalManager.portals)
 			portal.sendPortalVisuals(event.getPlayer());
