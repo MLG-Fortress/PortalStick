@@ -30,7 +30,6 @@ import org.bukkit.util.Vector;
 
 import com.matejdro.bukkit.portalstick.Bridge;
 import com.matejdro.bukkit.portalstick.Funnel;
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
@@ -106,9 +105,8 @@ public class PortalStickBlockListener implements Listener
 		return;
 	  }
 	  
-	  // Don't destroy inner grill blocks or bridges
-	  if(plugin.grillManager.insideBlocks.containsKey(loc) ||
-			  plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc))
+	  // Don't destroy inner bridges
+	  if(plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc))
 	  {
 		event.setCancelled(true);
 		fakeBBE = false;
@@ -120,19 +118,6 @@ public class PortalStickBlockListener implements Listener
 	  {
 		if(event.getPlayer() == null || plugin.hasPermission(event.getPlayer(), plugin.PERM_DELETE_BRIDGE))
 		  plugin.funnelBridgeManager.bridgeMachineBlocks.get(loc).delete();
-		else
-		{
-		  event.setCancelled(true);
-		  fakeBBE = false;
-		}
-		return;
-	  }
-	  
-	  //Delete grill
-	  if (plugin.grillManager.borderBlocks.containsKey(loc))
-	  {
-		if(event.getPlayer() == null || plugin.hasPermission(event.getPlayer(), plugin.PERM_DELETE_GRILL))
-		  plugin.grillManager.borderBlocks.get(loc).delete();
 		else
 		{
 		  event.setCancelled(true);
@@ -284,15 +269,6 @@ public class PortalStickBlockListener implements Listener
 			event.setCancelled(true);
 			plugin.getLogger().info("canceled at " + event.getSourceBlock().getLocation());
 		}
-	}
-	
-	@EventHandler(ignoreCancelled = true)
-	public void noGrowingGrills(BlockGrowEvent event)
-	{
-		if(plugin.config.DisabledWorlds.contains(event.getBlock().getLocation().getWorld().getName()))
-		  return;
-		if(plugin.grillManager.insideBlocks.containsKey(new V10Location(event.getBlock().getRelative(BlockFace.DOWN))))
-		  event.setCancelled(true);
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -577,24 +553,6 @@ public class PortalStickBlockListener implements Listener
 					 	}
 					 }
 			 }	 
-		 }
-		 
-		 //Turning off grills
-		 if (region.getBoolean(RegionSetting.ENABLE_GRILL_REDSTONE_DISABLING)) 
-		 {
-			 
-			 Grill grill = null;
-			 for (int i = 0; i < 5; i++)
-			 { 
-				grill = plugin.grillManager.borderBlocks.get(new V10Location(block.getRelative(BlockFace.values()[i])));
-				if (grill != null)
-				{
-				  if (event.getNewCurrent() > 0)
-					grill.disable();
-				  else
-				    grill.enable();
-				}
-			 }
 		 }
 		 
 		 //Turning off bridges or reversing funnels

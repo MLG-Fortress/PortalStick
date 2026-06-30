@@ -19,7 +19,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.matejdro.bukkit.portalstick.Bridge;
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
@@ -31,12 +30,10 @@ public class Config {
 	private final PortalStick plugin;
 	private final FileConfiguration mainConfig;
 	private final FileConfiguration regionConfig;
-	private final FileConfiguration grillConfig;
 	private final FileConfiguration bridgeConfig;
 	
 	private final File mainConfigFile;
 	private final File regionConfigFile;
-	private final File grillConfigFile;
 	private final File bridgeConfigFile;
 	
 	public HashSet<String> DisabledWorlds;
@@ -62,22 +59,14 @@ public class Config {
 		
 		mainConfigFile = getConfigFile("config.yml");
 		regionConfigFile = getConfigFile("regions.yml");
-		grillConfigFile = getConfigFile("grills.yml");
 		bridgeConfigFile = getConfigFile("bridges.yml");
 		
 		
 		mainConfig = getConfig(mainConfigFile);
 		regionConfig = getConfig(regionConfigFile);
-		grillConfig = getConfig(grillConfigFile);
 		bridgeConfig = getConfig(bridgeConfigFile);
 	}
 	
-	public void deleteGrill(String grill) {
-		List<String> list =  grillConfig.getStringList("grills");
-		list.remove(grill);
-		grillConfig.set("grills", list);
-		saveAll();
-	}
 	
 	public void deleteRegion(String name) {
 		regionConfig.set(name, null);
@@ -96,7 +85,6 @@ public class Config {
 		try {
 			mainConfig.load(mainConfigFile);
 			regionConfig.load(regionConfigFile);
-			grillConfig.load(grillConfigFile);
 			bridgeConfig.load(bridgeConfigFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -124,7 +112,6 @@ public class Config {
         soundNative[Sound.PORTAL_ENTER_BLUE.ordinal()] = getString("sounds.minecraft.enter-blue-portal", "fortress.portal.enter:0.3");
         soundNative[Sound.PORTAL_ENTER_ORANGE.ordinal()] = getString("sounds.minecraft.enter-orange-portal", "fortress.portal.enter:0.3");
         soundNative[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.minecraft.cannot-create-portal", "");
-        soundNative[Sound.GRILL_EMANCIPATE.ordinal()] = getString("sounds.minecraft.grill-emancipate", "FIZZ");
         soundNative[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.minecraft.faith-plate-launch", "EXPLODE:0.5");
         soundNative[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.minecraft.blue-gel-bounce", "SLIME_WALK2");
         
@@ -135,7 +122,6 @@ public class Config {
         soundUrls[Sound.PORTAL_EXIT_BLUE.ordinal()] = getString("sounds.spout.exit-blue-portal-url", "");
         soundUrls[Sound.PORTAL_EXIT_ORANGE.ordinal()] = getString("sounds.spout.exit-orange-portal-url", "");
         soundUrls[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.spout.cannot-create-portal-url", "");
-        soundUrls[Sound.GRILL_EMANCIPATE.ordinal()] = getString("sounds.spout.grill-emancipate-url", "");
         soundUrls[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.spout.faith-plate-launch-url", "");
         soundUrls[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.spout.blue-gel-bounce-url", "");
         
@@ -160,10 +146,6 @@ public class Config {
         	if(!region.validateRedGel())
         		plugin.getLogger().info("Inavlid red-gel-max-velocity for region \""+region.name+"\" - fixing!");
         
-        //Load grills
-        for (String grill : (grillConfig.getStringList("grills")))
-        	plugin.grillManager.loadGrill(grill);
-        plugin.getLogger().info(plugin.grillManager.grills.size() + " grill(s) loaded");
         //Load bridges
         for (String bridge : bridgeConfig.getStringList("bridges"))
         	plugin.funnelBridgeManager.loadBridge(bridge);
@@ -218,7 +200,6 @@ public class Config {
 		for(Portal p: plugin.portalManager.portals.toArray(new Portal[0]))
 			p.delete();
 		plugin.portalManager.portals.clear();
-		plugin.grillManager.deleteAll();
 		for(V10Location loc: plugin.gelManager.gels.keySet())
 		  plugin.gelManager.stopGelTube(loc);
 	}
@@ -277,24 +258,9 @@ public class Config {
 			plugin.getLogger().severe("Error while writing to regions.yml");
 		}
 		
-		//Save grills
-		grillConfig.set("grills", null);
-		List<String> list = new ArrayList<String>();
-		for (Grill grill : plugin.grillManager.grills)
-			list.add(grill.getStringLocation());
-		grillConfig.set("grills", list);
-		try
-		{
-			grillConfig.save(grillConfigFile);
-		}
-		catch (Exception ex)
-		{
-			plugin.getLogger().severe("Error while writing to grills.yml");
-		}
-		
 		//Save bridges
 		bridgeConfig.set("bridges", null);
-		list = new ArrayList<String>();
+		List<String> list = new ArrayList<String>();
 		for (Bridge bridge : plugin.funnelBridgeManager.bridges)
 			list.add(bridge.getStringLocation());
 		bridgeConfig.set("bridges", list);
@@ -328,7 +294,6 @@ public class Config {
 		PORTAL_ENTER_BLUE,
         PORTAL_ENTER_ORANGE,
 		PORTAL_CANNOT_CREATE,
-		GRILL_EMANCIPATE,
 		FAITHPLATE_LAUNCH,
 		GEL_BLUE_BOUNCE
 	}

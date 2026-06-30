@@ -381,17 +381,6 @@ public class EntityManager implements Runnable {
 		//Check for changing regions
 	    plugin.portalManager.checkEntityMove(entity, regionFrom, regionTo);
 		
-		//Emancipation grill
-		if (regionTo.getBoolean(RegionSetting.ENABLE_GRILLS))
-		{
-			Grill grill = plugin.grillManager.insideBlocks.get(vlocTo);
-			if (grill != null && !grill.disabled)
-			{
-				plugin.grillManager.emancipate(entity);
-				return null;
-			}
-		}
-		
 		//Aerial faith plate
 		Block blockIn = locTo.getBlock();
 		HashMap<BlockFace, Block> faceMap;

@@ -25,7 +25,6 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
@@ -143,16 +142,7 @@ public class PortalStickEntityListener implements Listener {
 					}
 				}
 			}
-//			else if (plugin.blockUtil.compareBlockToString(block, region.getString(RegionSetting.GRILL_MATERIAL)))
-//			{
-//				Grill grill = plugin.grillManager.insideBlocks.get(loc);
-//				if (grill == null) grill = plugin.grillManager.borderBlocks.get(loc);
-//				if (grill != null )
-//				{
-//					event.setCancelled(true);
-//					return;
-//				}
-//			} //RoboMWM: I don't care about grills (xddddd)
+
 		}
 	}
 }
