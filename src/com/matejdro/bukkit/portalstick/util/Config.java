@@ -97,7 +97,6 @@ public class Config {
         soundNative[Sound.PORTAL_ENTER_ORANGE.ordinal()] = getString("sounds.minecraft.enter-orange-portal", "fortress.portal.enter:0.3");
         soundNative[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.minecraft.cannot-create-portal", "");
         soundNative[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.minecraft.faith-plate-launch", "EXPLODE:0.5");
-        soundNative[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.minecraft.blue-gel-bounce", "SLIME_WALK2");
         
         useSpoutSounds = getBoolean("sounds.use-spout-sounds", false);
         
@@ -107,7 +106,6 @@ public class Config {
         soundUrls[Sound.PORTAL_EXIT_ORANGE.ordinal()] = getString("sounds.spout.exit-orange-portal-url", "");
         soundUrls[Sound.PORTAL_CANNOT_CREATE.ordinal()] = getString("sounds.spout.cannot-create-portal-url", "");
         soundUrls[Sound.FAITHPLATE_LAUNCH.ordinal()] = getString("sounds.spout.faith-plate-launch-url", "");
-        soundUrls[Sound.GEL_BLUE_BOUNCE.ordinal()] = getString("sounds.spout.blue-gel-bounce-url", "");
         
         soundRange = getInt("sounds.sound-range", 20);
         
@@ -122,10 +120,6 @@ public class Config {
         plugin.regionManager.loadRegion("global");
         plugin.getLogger().info(plugin.regionManager.regions.size() + " region(s) loaded");
         
-        //Validate regions
-        for(Region region: plugin.regionManager.regions.values())
-        	if(!region.validateRedGel())
-        		plugin.getLogger().info("Inavlid red-gel-max-velocity for region \""+region.name+"\" - fixing!");
         
         
         saveAll();
@@ -176,8 +170,6 @@ public class Config {
 		for(Portal p: plugin.portalManager.portals.toArray(new Portal[0]))
 			p.delete();
 		plugin.portalManager.portals.clear();
-		for(V10Location loc: plugin.gelManager.gels.keySet())
-		  plugin.gelManager.stopGelTube(loc);
 	}
 	
 	public void loadRegionSettings(Region region) {
@@ -255,8 +247,7 @@ public class Config {
 		PORTAL_ENTER_BLUE,
         PORTAL_ENTER_ORANGE,
 		PORTAL_CANNOT_CREATE,
-		FAITHPLATE_LAUNCH,
-		GEL_BLUE_BOUNCE
+		FAITHPLATE_LAUNCH
 	}
 	
 }

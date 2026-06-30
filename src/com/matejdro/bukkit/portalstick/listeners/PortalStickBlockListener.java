@@ -69,12 +69,6 @@ public class PortalStickBlockListener implements Listener
 	  if(plugin.config.DisabledWorlds.contains(loc.world))
 		return;
 	  
-	  //Delete from gel maps
-	  BlockHolder bh = new BlockHolder(block);
-	  if(plugin.gelManager.gelMap.containsKey(bh))
-	    plugin.gelManager.removeGel(bh);
-	  
-	  
 	  Portal portal = null;
 	  if(plugin.portalManager.borderBlocks.containsKey(loc))
 		portal = plugin.portalManager.borderBlocks.get(loc);
@@ -163,13 +157,6 @@ public class PortalStickBlockListener implements Listener
 			block.setType(Material.FIRE);
 		  return;
 		}
-		region = plugin.regionManager.getRegion(loc);
-		if(plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.BLUE_GEL_BLOCK)) ||
-				plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.RED_GEL_BLOCK)))
-		{
-		  event.setCancelled(true);
-		  return;
-		}
 	  }
 	}
 	
@@ -185,10 +172,6 @@ public class PortalStickBlockListener implements Listener
 			event.setCancelled(true);
 			return;
 		}
-		Region region = plugin.regionManager.getRegion(loc);
-		if(plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.BLUE_GEL_BLOCK)) ||
-				plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.RED_GEL_BLOCK)))
-		  event.setCancelled(true);
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -233,7 +216,6 @@ public class PortalStickBlockListener implements Listener
 		if (plugin.portalManager.insideBlocks.containsKey(new V10Location(block)))
 		{
 			event.setCancelled(true);
-			plugin.getLogger().info("canceled at " + event.getSourceBlock().getLocation());
 		}
 	}
 	

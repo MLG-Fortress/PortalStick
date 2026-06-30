@@ -34,7 +34,6 @@ public class PortalStick extends JavaPlugin {
 	public I18n i18n;
 	
 	public final EntityManager entityManager = new EntityManager(this);
-	public final GelManager gelManager = new GelManager(this);
 	public final PortalManager portalManager = new PortalManager(this);
 	public final RegionManager regionManager = new RegionManager(this);
 	public UserManager userManager;

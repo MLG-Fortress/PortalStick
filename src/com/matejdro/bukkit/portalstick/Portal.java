@@ -59,8 +59,6 @@ public class Portal {
 			{
 				bh = plugin.portalManager.oldBlocks.get(loc);
 				bh.reset();
-				if(plugin.gelManager.gelMap.containsKey(bh))
-					plugin.gelManager.removeGel(bh);
 				plugin.portalManager.oldBlocks.remove(loc);
 			}
 			plugin.portalManager.borderBlocks.remove(loc);
@@ -73,8 +71,6 @@ public class Portal {
 			{
 				bh = plugin.portalManager.oldBlocks.get(loc);
 				bh.reset();
-				if(plugin.gelManager.gelMap.containsKey(bh))
-					plugin.gelManager.removeGel(bh);
 				plugin.portalManager.oldBlocks.remove(loc);
 			}
 		  plugin.portalManager.insideBlocks.remove(loc);
@@ -87,8 +83,6 @@ public class Portal {
 				{
 					bh = plugin.portalManager.oldBlocks.get(loc);
 					bh.reset();
-					if(plugin.gelManager.gelMap.containsKey(bh))
-						plugin.gelManager.removeGel(bh);
 					plugin.portalManager.oldBlocks.remove(loc);
 				}
 				plugin.portalManager.behindBlocks.remove(loc);
@@ -130,9 +124,6 @@ public class Portal {
 		  if(loc == null)
 			continue;
 			b = loc.getHandle().getBlock();
-//			bh = new BlockHolder(b);
-//			if(plugin.gelManager.gelMap.containsKey(bh))
-//			  plugin.gelManager.removeGel(bh);
 			b.setType(Material.END_GATEWAY, false);
 			EndGateway endGateway = (EndGateway)b.getState(false);
 			endGateway.setAge(Long.MIN_VALUE);
@@ -226,11 +217,6 @@ public class Portal {
     		
     		rb = loc.getHandle().getBlock();
     		bh = new BlockHolder(rb);
-    		if(plugin.gelManager.gelMap.containsKey(bh))
-    		{
-    		  bh = plugin.gelManager.gelMap.get(bh);
-    		  plugin.gelManager.removeGel(bh);
-    		}
     		plugin.portalManager.oldBlocks.put(loc, bh);
     		rb.setType(plugin.util.getPortalColorMaterial(color), false);
     		plugin.portalManager.borderBlocks.put(loc, this);
@@ -241,11 +227,6 @@ public class Portal {
     	  {
     		rb = loc.getHandle().getBlock();
     		bh = new BlockHolder(rb);
-    		if(plugin.gelManager.gelMap.containsKey(bh))
-    		{
-      		  bh = plugin.gelManager.gelMap.get(bh);
-      		  plugin.gelManager.removeGel(bh);
-    		}
     		plugin.portalManager.oldBlocks.put(loc, bh);
     	  }
     	}
@@ -260,11 +241,6 @@ public class Portal {
 
         		rb = loc.getHandle().getBlock();
         		bh = new BlockHolder(rb);
-        		if(plugin.gelManager.gelMap.containsKey(bh))
-        		{
-          		  bh = plugin.gelManager.gelMap.get(bh);
-          		  plugin.gelManager.removeGel(bh);
-        		}
         		plugin.portalManager.oldBlocks.put(loc, bh);
         		if (plugin.config.CompactPortal)
         		{

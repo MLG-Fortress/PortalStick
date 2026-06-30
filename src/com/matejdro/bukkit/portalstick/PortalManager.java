@@ -98,7 +98,6 @@ public class PortalManager {
 		Material id;
 		ArrayList<Portal> overlap = new ArrayList<Portal>();
 		boolean ol;
-		BlockHolder bh;
 		Block block;
 		for (V10Location loc: portal.border)
 		{
@@ -128,10 +127,7 @@ public class PortalManager {
 			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
 			  {
 				bh = new BlockHolder(block);
-				if(plugin.gelManager.gelMap.containsKey(bh))
-				{
-				  bh = plugin.gelManager.gelMap.get(bh);
-				}
+
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
 				  return false;
 			  }
@@ -169,10 +165,7 @@ public class PortalManager {
 			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
 			  {
 				bh = new BlockHolder(block);
-				if(plugin.gelManager.gelMap.containsKey(bh))
-				{
-				  bh = plugin.gelManager.gelMap.get(bh);
-				}
+
 				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
 				  return false;
 			  }
