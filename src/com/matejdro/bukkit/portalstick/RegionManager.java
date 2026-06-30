@@ -25,23 +25,8 @@ public class RegionManager {
 		return region;
 	}
 	
-	public void deleteRegion(String name) {
-		Region region = getRegion(name);
-		regions.remove(region.name);
-		plugin.config.deleteRegion(name);
-	}
-	
-	public void createRegion(String name, V10Location one, V10Location two) {
-		Region region = loadRegion(name);
-		region.setLocation(one, two);
-		plugin.config.saveAll();
-	}
 	
 	public Region getRegion(V10Location location) {
-		Location rl = location.getHandle();
-		for (Region region : regions.values())
-			if (region.contains(rl.toVector()) && rl.getWorld().getName().equalsIgnoreCase(region.world) && !region.name.equalsIgnoreCase("global"))
-				return region;
 		return getRegion("global");
 	}
 	

@@ -14,15 +14,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.matejdro.bukkit.portalstick.commands.BaseCommand;
 import com.matejdro.bukkit.portalstick.commands.DeleteAllCommand;
 import com.matejdro.bukkit.portalstick.commands.DeleteCommand;
-import com.matejdro.bukkit.portalstick.commands.DeleteRegionCommand;
-import com.matejdro.bukkit.portalstick.commands.FlagCommand;
 import com.matejdro.bukkit.portalstick.commands.HelpCommand;
 import com.matejdro.bukkit.portalstick.commands.LanguageCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionInfoCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionListCommand;
-import com.matejdro.bukkit.portalstick.commands.RegionToolCommand;
 import com.matejdro.bukkit.portalstick.commands.ReloadCommand;
-import com.matejdro.bukkit.portalstick.commands.SetRegionCommand;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickBlockListener;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickEntityListener;
 import com.matejdro.bukkit.portalstick.listeners.PortalStickPlayerListener;
@@ -87,16 +81,10 @@ public class PortalStick extends JavaPlugin {
 		
 		//Register commands
 		ArrayList<BaseCommand> tmpList = new ArrayList<BaseCommand>();
-		tmpList.add(new RegionToolCommand(this));
-		tmpList.add(new SetRegionCommand(this));
 		tmpList.add(new ReloadCommand(this));
 		tmpList.add(new DeleteAllCommand(this));
 		tmpList.add(new DeleteCommand(this));
 		tmpList.add(new HelpCommand(this));
-		tmpList.add(new RegionListCommand(this));
-		tmpList.add(new DeleteRegionCommand(this));
-		tmpList.add(new FlagCommand(this));
-		tmpList.add(new RegionInfoCommand(this));
 		tmpList.add(new LanguageCommand(this));
 		commands = tmpList.toArray(new BaseCommand[0]);
 		//new Metrics(this);

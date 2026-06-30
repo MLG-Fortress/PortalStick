@@ -63,10 +63,6 @@ public class Config {
 	}
 	
 	
-	public void deleteRegion(String name) {
-		regionConfig.set(name, null);
-		saveAll();
-	}
 	
 
 	
@@ -123,9 +119,6 @@ public class Config {
 //			plugin.userManager.createUser(player);
 		
         //Load all regions
-        for (String regionName : regionConfig.getKeys(false))
-        	if(!regionName.equals("global"))
-        		plugin.regionManager.loadRegion(regionName);
         plugin.regionManager.loadRegion("global");
         plugin.getLogger().info(plugin.regionManager.regions.size() + " region(s) loaded");
         
