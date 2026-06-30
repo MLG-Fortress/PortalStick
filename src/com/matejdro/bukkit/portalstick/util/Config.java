@@ -18,7 +18,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.matejdro.bukkit.portalstick.Bridge;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
@@ -30,11 +29,9 @@ public class Config {
 	private final PortalStick plugin;
 	private final FileConfiguration mainConfig;
 	private final FileConfiguration regionConfig;
-	private final FileConfiguration bridgeConfig;
 	
 	private final File mainConfigFile;
 	private final File regionConfigFile;
-	private final File bridgeConfigFile;
 	
 	public HashSet<String> DisabledWorlds;
 	public Material PortalTool;
@@ -59,12 +56,10 @@ public class Config {
 		
 		mainConfigFile = getConfigFile("config.yml");
 		regionConfigFile = getConfigFile("regions.yml");
-		bridgeConfigFile = getConfigFile("bridges.yml");
 		
 		
 		mainConfig = getConfig(mainConfigFile);
 		regionConfig = getConfig(regionConfigFile);
-		bridgeConfig = getConfig(bridgeConfigFile);
 	}
 	
 	
@@ -73,19 +68,12 @@ public class Config {
 		saveAll();
 	}
 	
-	public void deleteBridge(String bridge) {
-		List<String> list = bridgeConfig.getStringList("bridges");
-		list.remove(bridge);
-		bridgeConfig.set("bridges", list);
-		saveAll();
-	}
 
 	
 	public void load() {
 		try {
 			mainConfig.load(mainConfigFile);
 			regionConfig.load(regionConfigFile);
-			bridgeConfig.load(bridgeConfigFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -146,10 +134,6 @@ public class Config {
         	if(!region.validateRedGel())
         		plugin.getLogger().info("Inavlid red-gel-max-velocity for region \""+region.name+"\" - fixing!");
         
-        //Load bridges
-        for (String bridge : bridgeConfig.getStringList("bridges"))
-        	plugin.funnelBridgeManager.loadBridge(bridge);
-        plugin.getLogger().info(plugin.funnelBridgeManager.bridges.size() + " bridge(s) loaded");
         
         saveAll();
 	}
@@ -196,7 +180,6 @@ public class Config {
 	{
 		for(World world: plugin.getServer().getWorlds())
 		  for(Chunk c: world.getLoadedChunks())
-		plugin.funnelBridgeManager.deleteAll();
 		for(Portal p: plugin.portalManager.portals.toArray(new Portal[0]))
 			p.delete();
 		plugin.portalManager.portals.clear();
@@ -256,21 +239,6 @@ public class Config {
 		catch (Exception ex)
 		{
 			plugin.getLogger().severe("Error while writing to regions.yml");
-		}
-		
-		//Save bridges
-		bridgeConfig.set("bridges", null);
-		List<String> list = new ArrayList<String>();
-		for (Bridge bridge : plugin.funnelBridgeManager.bridges)
-			list.add(bridge.getStringLocation());
-		bridgeConfig.set("bridges", list);
-		try
-		{
-			bridgeConfig.save(bridgeConfigFile);
-		}
-		catch (Exception ex)
-		{
-			plugin.getLogger().severe("Error while writing to bridges.yml");
 		}
 		
 		//Save main

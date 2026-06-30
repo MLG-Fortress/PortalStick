@@ -167,7 +167,6 @@ public class Portal {
 		}
 		
 		open = true;
-		plugin.funnelBridgeManager.reorientBridge(this);
 	}
 	
 	public void close()
@@ -185,8 +184,6 @@ public class Portal {
     		open = false;
 		  }
     	}
-		
-		plugin.funnelBridgeManager.reorientBridge(this);
 	}
 	
 	public void recreate()

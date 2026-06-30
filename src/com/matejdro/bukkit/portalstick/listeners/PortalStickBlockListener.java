@@ -28,8 +28,6 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.matejdro.bukkit.portalstick.Bridge;
-import com.matejdro.bukkit.portalstick.Funnel;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.Region;
@@ -76,10 +74,6 @@ public class PortalStickBlockListener implements Listener
 	  if(plugin.gelManager.gelMap.containsKey(bh))
 	    plugin.gelManager.removeGel(bh);
 	  
-	  //Update bridge if destroyed block made space.
-	  //We call this as early as possible to not be suppressed by one of the returns.
-	  //At the end it will be scheduled by one tick anyway.
-	  plugin.funnelBridgeManager.updateBridge(loc);
 	  
 	  Portal portal = null;
 	  if(plugin.portalManager.borderBlocks.containsKey(loc))
@@ -102,27 +96,6 @@ public class PortalStickBlockListener implements Listener
 	  {
 		portal.delete();
 		event.setCancelled(true);
-		return;
-	  }
-	  
-	  // Don't destroy inner bridges
-	  if(plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc))
-	  {
-		event.setCancelled(true);
-		fakeBBE = false;
-		return;
-	  }
-	  
-	  //Delete bridge
-	  if(plugin.funnelBridgeManager.bridgeMachineBlocks.containsKey(loc))
-	  {
-		if(event.getPlayer() == null || plugin.hasPermission(event.getPlayer(), plugin.PERM_DELETE_BRIDGE))
-		  plugin.funnelBridgeManager.bridgeMachineBlocks.get(loc).delete();
-		else
-		{
-		  event.setCancelled(true);
-		  fakeBBE = false;
-		}
 		return;
 	  }
 	  
@@ -224,13 +197,6 @@ public class PortalStickBlockListener implements Listener
 		  return;
 		Material block = event.getBlock().getType();
 		
-		//Prevent obstructing funnel
-		if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(new V10Location(event.getBlock())))
-		{
-			event.setCancelled(true);
-			return;
-		}
-		
 		if (block == Material.RAIL || block == Material.POWERED_RAIL || block == Material.DETECTOR_RAIL)
 		  return;
 		
@@ -271,93 +237,6 @@ public class PortalStickBlockListener implements Listener
 		}
 	}
 	
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockFromTo(BlockFromToEvent event) {
-		Block from = event.getBlock();
-		V10Location loc = new V10Location(from);
-		if(plugin.config.DisabledWorlds.contains(loc.world))
-		  return;
-		Block to = event.getToBlock();
-		V10Location tb = new V10Location(to);
-		 Region region = plugin.regionManager.getRegion(loc);
-//		 //Liquid teleporting
-//			if (region. //TODO: region is null! - Seems to be solved.
-//					getBoolean(
-//							RegionSetting.
-//							TELEPORT_LIQUIDS)
-//							&&
-//							!plugin.
-//							funnelBridgeManager.
-//							bridgeBlocks.
-//							containsKey(loc))
-//			{
-//				Portal portal = plugin.portalManager.insideBlocks.get(tb);
-//				if (portal != null && portal.open)
-//				{
-//					BlockData blockt = Material.AIR.createBlockData();
-//					BlockData blockt2 = blockt;
-//					switch (from.getType())
-//					{
-//						case WATER:
-//							blockt = Material.WATER.createBlockData();
-//							blockt2 = Material.STATIONARY_WATER.getId();
-//							break;
-//						default:
-//							blockt = Material.LAVA.createBlockData();
-//							blockt2 = Material.STATIONARY_LAVA.getId();
-//					}
-//
-//					V10Location dest;
-//					Portal destination = portal.getDestination();
-//					if(destination.horizontal || portal.inside[0].equals(tb))
-//					  dest = destination.teleport[0];
-//					else
-//					  dest = destination.teleport[1];
-//
-//					Block destb = dest.getHandle().getBlock();
-//					if (destb.getType() == Material.AIR)
-//					{
-//					  destb.setTypeId(blockt);
-//					  LiquidCheck lc = new LiquidCheck(loc, dest, destination, blockt2, blockt);
-//					  lc.setPid(plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, lc, 10L, 10L));
-//					}
-//					event.setCancelled(true);
-//				}
-//			}
-				//Funnel
-				if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc) && plugin.funnelBridgeManager.bridgeBlocks.containsKey(tb)) 
-				{
-					if (!(plugin.funnelBridgeManager.bridgeBlocks.get(loc) instanceof Funnel && plugin.funnelBridgeManager.bridgeBlocks.get(tb) instanceof Funnel))
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-					Funnel funnel1 = (Funnel) plugin.funnelBridgeManager.bridgeBlocks.get(loc);
-					Funnel funnel2 = (Funnel) plugin.funnelBridgeManager.bridgeBlocks.get(tb);
-					if (!funnel1.equals(funnel2))
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-					int numfrom = funnel1.getCounter(loc);
-					int numto = funnel1.getCounter(tb);
-					
-					if (numfrom < numto || numfrom < 0 || numto < 0)
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-				
-				}
-				else if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc) || plugin.funnelBridgeManager.bridgeBlocks.containsKey(tb))
-				{
-					event.setCancelled(true);
-					return;
-				}
-			}
 	
 //	@EventHandler(ignoreCancelled = true)
 //	public void infiniteDispenser(BlockDispenseEvent event)
@@ -553,37 +432,6 @@ public class PortalStickBlockListener implements Listener
 					 	}
 					 }
 			 }	 
-		 }
-		 
-		 //Turning off bridges or reversing funnels
-		 if (region.getBoolean(RegionSetting.ENABLE_BRIDGE_REDSTONE_DISABLING) && block.getType() != Material.REDSTONE_TORCH)
-		 {
-			 Bridge bridge = null;
-			 boolean cblock = false;
-			 for (int i = 0; i < 5; i++)
-			 {
-				 bridge = plugin.funnelBridgeManager.bridgeMachineBlocks.get(new V10Location(block.getRelative(BlockFace.values()[i])));
-				 if (bridge != null) 
-				 {
-					 cblock = new V10Location(block.getRelative(BlockFace.values()[i])).equals(bridge.creationBlock);
-					 break;
-				 }
-			 }
-			 
-			 if (bridge != null)
-			 {
-				 if (bridge instanceof Funnel && cblock)
-				 {
-					((Funnel) bridge).setReverse(event.getNewCurrent() > 0); 
-				 }
-				 else
-				 {
-					 if (event.getNewCurrent() > 0)
-						 bridge.deactivate();
-				     else
-				    	 bridge.activate(); 
-				 }
-			 }
 		 }
 		 
 		 //Portal Generators

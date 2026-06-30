@@ -40,7 +40,6 @@ public class PortalStick extends JavaPlugin {
 	public I18n i18n;
 	
 	public final EntityManager entityManager = new EntityManager(this);
-	public final FunnelBridgeManager funnelBridgeManager = new FunnelBridgeManager(this);
 	public final GelManager gelManager = new GelManager(this);
 	public final PortalManager portalManager = new PortalManager(this);
 	public final RegionManager regionManager = new RegionManager(this);
@@ -114,11 +113,9 @@ public class PortalStick extends JavaPlugin {
 		return false;
 	}
 	
-	public final String PERM_CREATE_BRIDGE	= "portalstick.createbridge";
 	public final String PERM_PLACE_PORTAL	= "portalstick.placeportal";
 	public final String PERM_DELETE_ALL		= "portalstick.admin.deleteall";
 	public final String PERM_ADMIN_REGIONS	= "portalstick.admin.regions";
-	public final String PERM_DELETE_BRIDGE	= "portalstick.deletebridge";
 	public final String PERM_DAMAGE_BOOTS	= "portalstick.damageboots";
 	public final String PERM_TELEPORT 		= "portalstick.teleport";
 	public final String PERM_LANGUAGE		= "portalstick.language";
