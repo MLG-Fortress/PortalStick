@@ -65,40 +65,12 @@ public class PortalManager {
 	public final HashMap<V10Location, BlockHolder> oldBlocks = new HashMap<V10Location, BlockHolder>();
 	private Set<Material> nonPortalableMaterials = new HashSet<>();
 
-	public void checkEntityMove(Entity e, Region regionFrom, Region regionTo)
-	{
-	  if(!(e instanceof InventoryHolder))
-		return;
-	  
-	  InventoryHolder ih = (InventoryHolder)e;
-	  User user = plugin.userManager.getUser(e);
-	  
-	  if (user == null || user.usingTool)
-		return;
-	  if (!regionTo.name.equals(regionFrom.name)) {
-		if(ih instanceof Player && (regionFrom.getBoolean(RegionSetting.DELETE_ON_EXITENTRANCE) || regionTo.getBoolean(RegionSetting.DELETE_ON_EXITENTRANCE)))
-		  deletePortals(user);
-		
-		if (regionFrom.getBoolean(RegionSetting.UNIQUE_INVENTORY) || regionTo.getBoolean(RegionSetting.UNIQUE_INVENTORY))
-		{
-		  if (regionTo.name.equalsIgnoreCase("global"))
-			user.revertInventory(ih);
-		  else
-		  {
-			user.saveInventory(ih);
-			setPortalInventory(ih, regionTo);
-		  }
-		}
-	  }
-	}
 	
 	private boolean checkPortal(PortalCoord portal)
 	{
-		Region region;
 		Material id;
 		ArrayList<Portal> overlap = new ArrayList<Portal>();
 		boolean ol;
-		BlockHolder bh;
 		Block block;
 		for (V10Location loc: portal.border)
 		{
@@ -124,15 +96,9 @@ public class PortalManager {
 			{
 			  block = loc.getHandle().getBlock();
 			  Material blockType = block.getType();
-			  region = plugin.regionManager.getRegion(loc);
-			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
+			  if(!plugin.config.getGlobalBoolean(RegionSetting.ALL_BLOCKS_PORTAL)) // AI edit: portal-gun-only cleanup
 			  {
-				bh = new BlockHolder(block);
-				if(plugin.gelManager.gelMap.containsKey(bh))
-				{
-				  bh = plugin.gelManager.gelMap.get(bh);
-				}
-				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name()))
+				if(!plugin.config.getGlobalList(RegionSetting.PORTAL_BLOCKS).contains(blockType.name())) // AI edit: portal-gun-only cleanup
 				  return false;
 			  }
 			  if (nonoBlock(block))
@@ -165,15 +131,9 @@ public class PortalManager {
 			{
 			  block = loc.getHandle().getBlock();
 			  id = block.getType();
-			  region = plugin.regionManager.getRegion(loc);
-			  if(!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL))
+			  if(!plugin.config.getGlobalBoolean(RegionSetting.ALL_BLOCKS_PORTAL)) // AI edit: portal-gun-only cleanup
 			  {
-				bh = new BlockHolder(block);
-				if(plugin.gelManager.gelMap.containsKey(bh))
-				{
-				  bh = plugin.gelManager.gelMap.get(bh);
-				}
-				if(!region.getList(RegionSetting.PORTAL_BLOCKS).contains(id))
+				if(!plugin.config.getGlobalList(RegionSetting.PORTAL_BLOCKS).contains(id.name())) // AI edit: portal-gun-only cleanup
 				  return false;
 			  }
 			  if (nonoBlock(block))
@@ -382,14 +342,13 @@ public class PortalManager {
 		//Check if player can place here
 		Location loc = block.getHandle();
 		Block bBlock = loc.getBlock();
-		Region region = plugin.regionManager.getRegion(block);
 
-		if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
+		if (!plugin.config.getGlobalBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL)) // AI edit: portal-gun-only cleanup
 			return false;
 		//RoboMWM: Don't allow player to put portal on transparent blocks
 		//or containers
 		if (loc.getY() > 255
-				|| region.getList(RegionSetting.TRANSPARENT_BLOCKS).contains(bBlock.getType().name())
+				|| plugin.config.getGlobalList(RegionSetting.TRANSPARENT_BLOCKS).contains(bBlock.getType().name()) // AI edit: portal-gun-only cleanup
 				|| PortalStickPlayerListener.nonSolidBlocks.contains(bBlock.getType())
 				|| nonPortalableMaterials.contains(bBlock.getType()))
         {
@@ -445,7 +404,6 @@ public class PortalManager {
 		}
 		
 		portals.add(portal);
-		region.portals.add(portal);
 		portal.create();
 		return true;
 		
@@ -490,214 +448,4 @@ public class PortalManager {
 	
 	 }
 
-	public void setPortalInventory(InventoryHolder ih, Region region)
-	{
-		if(region.getBoolean(RegionSetting.UNIQUE_INVENTORY))
-		{
-		  ItemStack item;
-		  Inventory inv = ih.getInventory();
-		  for (Object is : region.getList(RegionSetting.UNIQUE_INVENTORY_ITEMS))
-		  {
-			item = plugin.util.getItemData((String)is);
-			inv.addItem(item);
-		  }
-		}
-	}
-	
-	public void tryPlacingAutomatedPortal(Block rb)
-	{
-//		//Check if wool is correct
-//		Wool wool = (Wool) Material.WOOL.getNewData(rb.getData());
-//		if (wool.getColor() != DyeColor.BLACK && wool.getColor() != DyeColor.LIGHT_BLUE && wool.getColor() != DyeColor.ORANGE) return;
-//		//Check for first iron bar
-//		Block firstIronBar = null;
-//		for (int i = 0; i < 6; i++)
-//		 {
-//			 if (rb.getRelative(BlockFace.values()[i], 2).getType() == Material.IRON_FENCE)
-//			 {
-//				firstIronBar = rb.getRelative(BlockFace.values()[i], 2);
-//				break;
-//			 }
-//			 else if (rb.getRelative(BlockFace.values()[i]).getType() == Material.IRON_FENCE)
-//			 {
-//				firstIronBar = rb.getRelative(BlockFace.values()[i]);
-//				break;
-//			 }
-//		 }
-//		if (firstIronBar == null)
-//		  return;
-//		//Find other iron bars at same side of portal generator
-//		ArrayList<Block> ironBars = new ArrayList<Block>();
-//
-//		for (int i = 0; i < 6; i++)
-//		 {
-//			BlockFace face = BlockFace.values()[i];
-//			 if (firstIronBar.getRelative(face).getType() == Material.IRON_FENCE)
-//			 {
-//				 while (firstIronBar.getRelative(face).getType() == Material.IRON_FENCE)
-//				 {
-//					 firstIronBar = firstIronBar.getRelative(face);
-//				 }
-//
-//				//firstIronBar.setType(Material.WOOD);
-//				 ironBars.add(firstIronBar);
-//
-//				 int counter = 1;
-//				 while (firstIronBar.getRelative(face.getOppositeFace(), counter).getType() == Material.IRON_FENCE)
-//				 {
-//					 ironBars.add(firstIronBar.getRelative(face.getOppositeFace(), counter));
-//					 counter++;
-//				 }
-//
-//
-//				 break;
-//			 }
-//		 }
-//
-//		//Find, in which direction is other side of portal generator
-//		int size = plugin.config.CompactPortal ? 2 : 4; // How far is another side of portal generator
-//		BlockFace otherSide = null;
-//		for (int i = 0; i < 6; i++)
-//		 {
-//			BlockFace face = BlockFace.values()[i];
-//			if (firstIronBar.getRelative(face, size).getType() == Material.IRON_FENCE)
-//			{
-//				otherSide = face;
-//				break;
-//			}
-//		 }
-//		if (otherSide == null)
-//		  return;
-//		//Search for iron bars on other side of portal generator
-//		for (Block ironBar : ironBars.toArray(new Block[0]))
-//		{
-//			if (ironBar.getRelative(otherSide, size).getType() == Material.IRON_FENCE)
-//				//ironBar.setType(Material.WOOD);
-//				ironBars.add(ironBar.getRelative(otherSide, size));
-//		}
-//
-//		BlockFace portalFace = null;
-//		Portal oldPortal = null;
-//		Region region = plugin.regionManager.getRegion(new V10Location(rb));
-//		//Find, where portal surface is
-//		for (int i = 0; i < 6; i++)
-//		{
-//			BlockFace face2 = BlockFace.values()[i];
-//			if (face2 == otherSide || face2.getOppositeFace() == otherSide)
-//				continue;
-//			Block firstPortalBlock = firstIronBar.getRelative(otherSide).getRelative(face2);
-//			if (region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL) || region.getList(RegionSetting.PORTAL_BLOCKS).contains(firstPortalBlock.getTypeId()))
-//			{
-//				portalFace = face2;
-//				break;
-//			}
-//			else
-//			{
-//				V10Location loc = new V10Location(firstPortalBlock);
-//
-//				if (oldPortal == null)
-//					oldPortal = borderBlocks.get(loc);
-//				if (oldPortal == null)
-//					oldPortal = insideBlocks.get(loc);
-//
-//				if (oldPortal != null)
-//				{
-//					portalFace = face2;
-//					break;
-//				}
-//			}
-//		}
-//
-//		if (portalFace == null)
-//			return;
-//		//Is portal generator right size?
-//		if ((!plugin.config.CompactPortal &&
-//		(((portalFace == BlockFace.UP || portalFace == BlockFace.DOWN) && ironBars.size() != 6 ) ||
-//		(portalFace != BlockFace.UP && portalFace != BlockFace.DOWN && ironBars.size() != 8 ))) ||
-//		(plugin.config.CompactPortal &&
-//		(((portalFace == BlockFace.UP || portalFace == BlockFace.DOWN) && ironBars.size() != 2 ) ||
-//		(portalFace != BlockFace.UP && portalFace != BlockFace.DOWN && ironBars.size() != 4 ))))
-//			return;
-//
-//		if (wool.getColor() == DyeColor.BLACK)
-//		{
-//			if (oldPortal != null)
-//			  oldPortal.delete();
-//			return;
-//		}
-//
-//		//Check if portal is big enough and start making a portal
-//		PortalCoord portalc = new PortalCoord();
-//		int c = 0;
-//		for (int i = 0; i < ironBars.size() / 2; i++)
-//		{
-//			portalc.border.add(new V10Location(ironBars.get(i).getRelative(portalFace).getRelative(otherSide, 1)));
-//			portalc.border.add(new V10Location(ironBars.get(i).getRelative(portalFace).getRelative(otherSide, 3)));
-//
-//			if (i == 0 || i == (ironBars.size() / 2) - 1)
-//				portalc.border.add(new V10Location(ironBars.get(i).getRelative(portalFace).getRelative(otherSide, 2)));
-//			else
-//				portalc.inside[c++] = new V10Location(ironBars.get(i).getRelative(portalFace).getRelative(otherSide, 2));
-//		}
-//
-//		portalc.vertical = portalFace == BlockFace.UP || portalFace == BlockFace.DOWN;
-//		portalc.block = portalc.inside[0];
-//
-//		if (oldPortal != null)
-//		  oldPortal.delete();
-//
-//		if (portalc.border.size() == 0 || portalc.inside[0] == null)
-//		  return;
-//		for (V10Location tb : portalc.border)
-//		{
-//			oldPortal = borderBlocks.get(tb);
-//			if (oldPortal != null)
-//				oldPortal.delete();
-//
-//			if ((!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL) && !region.getList(RegionSetting.PORTAL_BLOCKS).contains(tb.getHandle().getBlock().getTypeId())) || borderBlocks.containsKey(tb) || insideBlocks.containsKey(tb)) return;
-//
-//		}
-//		for (V10Location tb : portalc.inside)
-//		{
-//			if (tb != null)
-//			{
-//				oldPortal = borderBlocks.get(tb);
-//				if (oldPortal != null)
-//					oldPortal.delete();
-//
-//				if ((!region.getBoolean(RegionSetting.ALL_BLOCKS_PORTAL) && !region.getList(RegionSetting.PORTAL_BLOCKS).contains(tb.getHandle().getBlock().getTypeId())) || borderBlocks.containsKey(tb) || insideBlocks.containsKey(tb)) return;
-//			}
-//		}
-//
-//		if (portalc.vertical)
-//		  portalc.destLoc[0] = new V10Location(portalc.inside[0].getHandle().getBlock().getRelative(portalFace.getOppositeFace()));
-//		else
-//		{
-//		  Block block = portalc.inside[0].getHandle().getBlock().getRelative(portalFace.getOppositeFace());
-//		  portalc.destLoc[0] = new V10Location(block);
-//		  block = block.getRelative(BlockFace.UP);
-//		  portalc.destLoc[1] = new V10Location(block);
-//		}
-//
-//		portalc.tpFace = portalFace;
-//
-//		boolean orange = wool.getColor() == DyeColor.ORANGE;
-//
-//		Portal portal = new Portal(plugin, portalc.destLoc, portalc.block, portalc.border, portalc.inside, portalc.behind, region, orange, portalc.vertical, portalc.tpFace);
-//
-//		if (orange)
-//		{
-//			if (region.orangePortal != null) region.orangePortal.delete();
-//			region.orangePortal = portal;
-//		}
-//		else
-//		{
-//			if (region.bluePortal != null) region.bluePortal.delete();
-//			region.bluePortal = portal;
-//		}
-//		portals.add(portal);
-//		region.portals.add(portal);
-//
-//		portal.create();
-	}
 }

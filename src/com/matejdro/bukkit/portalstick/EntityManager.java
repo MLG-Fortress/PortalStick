@@ -41,7 +41,6 @@ public class EntityManager implements Runnable {
 		if (entity == null || entity.isDead() || blockedEntities.contains(entity))
 		  return null;
 
-		Region regionTo = plugin.regionManager.getRegion(locTo);
 		Portal portal = plugin.portalManager.insideBlocks.get(locTo);
 		final Location teleport;
 		final Portal destination;
@@ -51,6 +50,8 @@ public class EntityManager implements Runnable {
 		  if(!portal.open)
 			return null;
 		  destination = portal.getDestination();
+		  if(destination == null) // AI edit: portal-gun-only cleanup
+			return null;
 		  if(destination.horizontal || portal.inside[0].equals(locTo))
 			teleport = destination.teleport[0].getHandle();
 		  else
@@ -67,6 +68,8 @@ public class EntityManager implements Runnable {
 			if(!portal.open)
 			  return null;
 			destination = portal.getDestination();
+			if(destination == null) // AI edit: portal-gun-only cleanup
+			  return null;
 			teleport = destination.teleport[0].getHandle();
 		  }
 		  else if((Math.abs(vector.getX()) > 0.5 || (Math.abs(vector.getY()) > 1 || (Math.abs(vector.getZ()) > 0.5))) || entity instanceof Boat)
@@ -79,6 +82,8 @@ public class EntityManager implements Runnable {
 			  return null;
 			
 			destination = portal.getDestination();
+			if(destination == null) // AI edit: portal-gun-only cleanup
+			  return null;
 			if(destination.horizontal || portal.teleport[0].y <= locTo.y)
 			  teleport = destination.teleport[0].getHandle();
 			else
@@ -197,7 +202,7 @@ public class EntityManager implements Runnable {
 
 	    yaw = (yaw + 360) % 360;
 		momentum = Math.abs(momentum);
-		momentum *= regionTo.getDouble(RegionSetting.VELOCITY_MULTIPLIER);
+		momentum *= plugin.config.getGlobalDouble(RegionSetting.VELOCITY_MULTIPLIER); // AI edit: portal-gun-only cleanup
 			//reposition velocity to match output portal's orientation
 			//Also sets direction (yaw and/or pitch) relative to portal
 		Vector outvector = entity.getVelocity().zero();
@@ -348,10 +353,8 @@ public class EntityManager implements Runnable {
 	@Override
 	public void run()
 	{
-		faceCache.clear();
 	}
 	
-	HashMap<V10Location, HashMap<BlockFace, Block>> faceCache = new HashMap<V10Location, HashMap<BlockFace, Block>>();
 	
 	public Location onEntityMove(final Entity entity, Location locFrom, Location locTo, boolean tp)
 	{
@@ -375,84 +378,8 @@ public class EntityManager implements Runnable {
 	    Vector vector = vec2.subtract(vec1);
 	    vector.setY(entity.getVelocity().getY());
 	    
-	    Region regionTo = plugin.regionManager.getRegion(vlocTo);
-		Region regionFrom = plugin.regionManager.getRegion(vlocFrom);
 		
-		//Check for changing regions
-	    plugin.portalManager.checkEntityMove(entity, regionFrom, regionTo);
 		
-		//Emancipation grill
-		if (regionTo.getBoolean(RegionSetting.ENABLE_GRILLS))
-		{
-			Grill grill = plugin.grillManager.insideBlocks.get(vlocTo);
-			if (grill != null && !grill.disabled)
-			{
-				plugin.grillManager.emancipate(entity);
-				return null;
-			}
-		}
-		
-		//Aerial faith plate
-		Block blockIn = locTo.getBlock();
-		HashMap<BlockFace, Block> faceMap;
-		if(faceCache.containsKey(vlocTo))
-		  faceMap = faceCache.get(vlocTo);
-		else
-		{
-		  faceMap = new HashMap<BlockFace, Block>();
-		  faceCache.put(vlocTo, faceMap);
-		}
-		Block blockUnder;
-		if(faceMap.containsKey(BlockFace.DOWN))
-		  blockUnder = faceMap.get(BlockFace.DOWN);
-		else
-		{
-		  blockUnder = blockIn.getRelative(BlockFace.DOWN);
-		  faceMap.put(BlockFace.DOWN, blockUnder);
-		}
-		  
-		//  blockUnder = blockIn.getRelative(BlockFace.DOWN);
-		  
-		if (regionTo.getBoolean(RegionSetting.ENABLE_AERIAL_FAITH_PLATES))
-		{
-			Block blockStart = null;
-			d = Double.parseDouble(regionTo.getString(RegionSetting.FAITH_PLATE_POWER).split("-")[0]);
-			String faithBlock = regionTo.getString(RegionSetting.FAITH_PLATE_BLOCK);
-			Vector velocity = new Vector(0, Double.parseDouble(regionTo.getString(RegionSetting.FAITH_PLATE_POWER).split("-")[1]),0);
-			
-			if (blockIn.getType() == Material.STONE_PRESSURE_PLATE && plugin.blockUtil.compareBlockToString(blockUnder, faithBlock))
-				blockStart = blockUnder;
-			else
-				blockStart = blockIn;
-			if (blockStart != null) {
-				BlockFace[] faces = new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
-				BlockFace face = plugin.blockUtil.getFaceOfMaterial(blockStart, faces, faithBlock, faceMap);
-				if (face != null) {
-					switch (face) {
-						case NORTH:
-							velocity.setX(d);
-							break;
-						case SOUTH:
-							velocity.setX(-d);
-							break;
-						case EAST:
-							velocity.setZ(d);
-							break;
-						case WEST:
-							velocity.setZ(-d);
-							break;
-					}
-					if (blockStart == blockUnder) {
-						velocity.setX(-velocity.getX());
-						velocity.setZ(-velocity.getZ());
-					}
-					entity.setVelocity(velocity);
-					plugin.util.playSound(Sound.FAITHPLATE_LAUNCH, new V10Location(blockStart.getLocation()));
-					return null;
-				}
-			}
-		
-		}
 		Location ret = null;
 		//Teleport
 		if (!(entity instanceof Player) || plugin.hasPermission((Player)entity, plugin.PERM_TELEPORT))
@@ -466,12 +393,6 @@ public class EntityManager implements Runnable {
 		  }
 		}
 		
-		//Gel
-		if(!plugin.gelManager.flyingGels.containsKey(entity.getUniqueId()))
-		  plugin.gelManager.useGel(entity, vlocTo, vector, blockIn, blockUnder, faceMap);
-		
-		//Funnel
-//		plugin.funnelBridgeManager.EntityMoveCheck(entity);
 		
 		return ret;
 	}

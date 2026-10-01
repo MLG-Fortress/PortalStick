@@ -12,7 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
-public class UserManager implements Runnable {
+public class UserManager { // AI edit: portal-gun-only cleanup
 	private final PortalStick plugin;
 	private final HashMap<String, User> playerUsers = new HashMap<String, User>();
 	private final HashMap<UUID, User> entityUsers = new HashMap<UUID, User>();
@@ -63,7 +63,6 @@ public class UserManager implements Runnable {
 		if (user == null) return;
 		
 		plugin.portalManager.deletePortals(user);
-		deleteDroppedItems(user);
 		playerUsers.values().remove(user);
 		entityUsers.values().remove(user);
 		if(!user.isPlayer)
@@ -78,34 +77,4 @@ public class UserManager implements Runnable {
 	  return ret;
 	}
 	
-	public void deleteDroppedItems(User user)
-	{
-		if (user == null) return;
-		
-	  Location loc;
-	  for(Item item: user.droppedItems)
-		if(item.isValid() && !item.isDead())
-		{
-		  loc = item.getLocation();
-		  item.remove();
-		  loc.getWorld().playEffect(loc, Effect.SMOKE, 4);
-		}
-	  user.droppedItems.clear();
-	}
-	
-	public void run()
-	{
-	  Iterator<Item> iter;
-	  Item item;
-	  for(User user: playerUsers.values())
-	  {
-		iter = user.droppedItems.iterator();
-		while(iter.hasNext())
-		{
-		  item = iter.next();
-		  if(!item.isValid() || item.isDead())
-			iter.remove();
-		}
-	  }
-	}
 }

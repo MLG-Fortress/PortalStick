@@ -28,12 +28,8 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.matejdro.bukkit.portalstick.Bridge;
-import com.matejdro.bukkit.portalstick.Funnel;
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
-import com.matejdro.bukkit.portalstick.Region;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
 import de.V10lator.PortalStick.BlockHolder;
@@ -72,16 +68,6 @@ public class PortalStickBlockListener implements Listener
 	  if(plugin.config.DisabledWorlds.contains(loc.world))
 		return;
 	  
-	  //Delete from gel maps
-	  BlockHolder bh = new BlockHolder(block);
-	  if(plugin.gelManager.gelMap.containsKey(bh))
-	    plugin.gelManager.removeGel(bh);
-	  
-	  //Update bridge if destroyed block made space.
-	  //We call this as early as possible to not be suppressed by one of the returns.
-	  //At the end it will be scheduled by one tick anyway.
-	  plugin.funnelBridgeManager.updateBridge(loc);
-	  
 	  Portal portal = null;
 	  if(plugin.portalManager.borderBlocks.containsKey(loc))
 		portal = plugin.portalManager.borderBlocks.get(loc);
@@ -90,12 +76,6 @@ public class PortalStickBlockListener implements Listener
 	  else if (plugin.portalManager.insideBlocks.containsKey(loc))
 	  {
 		portal = plugin.portalManager.insideBlocks.get(loc);
-		if(portal.transmitter && block.getType() == Material.REDSTONE_TORCH)
-		{
-		  event.setCancelled(true);
-		  fakeBBE = false;
-		  return;
-		}
 		if(portal.open)
 		  return;
 	  }
@@ -106,68 +86,6 @@ public class PortalStickBlockListener implements Listener
 		return;
 	  }
 	  
-	  // Don't destroy inner grill blocks or bridges
-	  if(plugin.grillManager.insideBlocks.containsKey(loc) ||
-			  plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc))
-	  {
-		event.setCancelled(true);
-		fakeBBE = false;
-		return;
-	  }
-	  
-	  //Delete bridge
-	  if(plugin.funnelBridgeManager.bridgeMachineBlocks.containsKey(loc))
-	  {
-		if(event.getPlayer() == null || plugin.hasPermission(event.getPlayer(), plugin.PERM_DELETE_BRIDGE))
-		  plugin.funnelBridgeManager.bridgeMachineBlocks.get(loc).delete();
-		else
-		{
-		  event.setCancelled(true);
-		  fakeBBE = false;
-		}
-		return;
-	  }
-	  
-	  //Delete grill
-	  if (plugin.grillManager.borderBlocks.containsKey(loc))
-	  {
-		if(event.getPlayer() == null || plugin.hasPermission(event.getPlayer(), plugin.PERM_DELETE_GRILL))
-		  plugin.grillManager.borderBlocks.get(loc).delete();
-		else
-		{
-		  event.setCancelled(true);
-		  fakeBBE = false;
-		}
-		return;
-	  }
-	  
-	  Material type = block.getType();
-	  Region region = plugin.regionManager.getRegion(loc);
-	  if(type == Material.REDSTONE_WIRE && region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
-	  {
-		Location l = block.getLocation();
-		
-		for (int i = 0; i < 4; i++)
-		{
-		  BlockFace face = BlockFace.values()[i];
-		  loc = new V10Location(new Location(l.getWorld(), l.getX() + face.getModX(), l.getY() + face.getModY(), l.getZ() + face.getModZ()));
-		  if (plugin.portalManager.insideBlocks.containsKey(loc)) 
-		  {
-			portal = plugin.portalManager.insideBlocks.get(loc);
-			if (!portal.open)
-			  continue;
-			
-			Portal destination = portal.getDestination();
-			if (destination == null || destination.transmitter)
-			  continue;
-			
-			for (V10Location b: destination.inside)
-			  if(b != null)
-				b.getHandle().getBlock().setType(Material.AIR);
-			portal.transmitter = false;
-		  }
-		}
-	  }
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -177,7 +95,6 @@ public class PortalStickBlockListener implements Listener
 	  if(plugin.config.DisabledWorlds.contains(block.getLocation().getWorld().getName()))
 		return;
 	  V10Location loc;
-	  Region region;
 	  for(BlockFace face: new BlockFace[] {BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP})
 	  {
 		loc = new V10Location(block.getRelative(face));
@@ -194,7 +111,8 @@ public class PortalStickBlockListener implements Listener
 		  if(!portal.open)
 			return;
 		  Portal dest = portal.getDestination();
-		  
+		  if(dest == null) // AI edit: portal-gun-only cleanup
+			return;
 		  V10Location destl;
 		  if(dest.horizontal || portal.inside[0].equals(loc))
 			destl = dest.teleport[0];
@@ -203,13 +121,6 @@ public class PortalStickBlockListener implements Listener
 		  block = destl.getHandle().getBlock();
 		  if(block.getType() == Material.AIR)
 			block.setType(Material.FIRE);
-		  return;
-		}
-		region = plugin.regionManager.getRegion(loc);
-		if(plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.BLUE_GEL_BLOCK)) ||
-				plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.RED_GEL_BLOCK)))
-		{
-		  event.setCancelled(true);
 		  return;
 		}
 	  }
@@ -227,10 +138,6 @@ public class PortalStickBlockListener implements Listener
 			event.setCancelled(true);
 			return;
 		}
-		Region region = plugin.regionManager.getRegion(loc);
-		if(plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.BLUE_GEL_BLOCK)) ||
-				plugin.blockUtil.compareBlockToString(loc, (String)region.settings.get(RegionSetting.RED_GEL_BLOCK)))
-		  event.setCancelled(true);
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -238,13 +145,6 @@ public class PortalStickBlockListener implements Listener
 		if(plugin.config.DisabledWorlds.contains(event.getBlock().getLocation().getWorld().getName()))
 		  return;
 		Material block = event.getBlock().getType();
-		
-		//Prevent obstructing funnel
-		if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(new V10Location(event.getBlock())))
-		{
-			event.setCancelled(true);
-			return;
-		}
 		
 		if (block == Material.RAIL || block == Material.POWERED_RAIL || block == Material.DETECTOR_RAIL)
 		  return;
@@ -286,14 +186,6 @@ public class PortalStickBlockListener implements Listener
 		}
 	}
 	
-	@EventHandler(ignoreCancelled = true)
-	public void noGrowingGrills(BlockGrowEvent event)
-	{
-		if(plugin.config.DisabledWorlds.contains(event.getBlock().getLocation().getWorld().getName()))
-		  return;
-		if(plugin.grillManager.insideBlocks.containsKey(new V10Location(event.getBlock().getRelative(BlockFace.DOWN))))
-		  event.setCancelled(true);
-	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockFromTo(BlockFromToEvent event) {
@@ -303,7 +195,6 @@ public class PortalStickBlockListener implements Listener
 		  return;
 		Block to = event.getToBlock();
 		V10Location tb = new V10Location(to);
-		 Region region = plugin.regionManager.getRegion(loc);
 //		 //Liquid teleporting
 //			if (region. //TODO: region is null! - Seems to be solved.
 //					getBoolean(
@@ -348,40 +239,6 @@ public class PortalStickBlockListener implements Listener
 //					event.setCancelled(true);
 //				}
 //			}
-				//Funnel
-				if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc) && plugin.funnelBridgeManager.bridgeBlocks.containsKey(tb)) 
-				{
-					if (!(plugin.funnelBridgeManager.bridgeBlocks.get(loc) instanceof Funnel && plugin.funnelBridgeManager.bridgeBlocks.get(tb) instanceof Funnel))
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-					Funnel funnel1 = (Funnel) plugin.funnelBridgeManager.bridgeBlocks.get(loc);
-					Funnel funnel2 = (Funnel) plugin.funnelBridgeManager.bridgeBlocks.get(tb);
-					if (!funnel1.equals(funnel2))
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-					int numfrom = funnel1.getCounter(loc);
-					int numto = funnel1.getCounter(tb);
-					
-					if (numfrom < numto || numfrom < 0 || numto < 0)
-					{
-						event.setCancelled(true);
-						return;
-					}
-					
-				
-				}
-				else if (plugin.funnelBridgeManager.bridgeBlocks.containsKey(loc) || plugin.funnelBridgeManager.bridgeBlocks.containsKey(tb))
-				{
-					event.setCancelled(true);
-					return;
-				}
-			}
 	
 //	@EventHandler(ignoreCancelled = true)
 //	public void infiniteDispenser(BlockDispenseEvent event)
@@ -523,6 +380,7 @@ public class PortalStickBlockListener implements Listener
 //		plugin.gelManager.flyingGels.put(fb.getUniqueId(), loc);
 //	  }
 //	}
+			}
 	
 	@EventHandler()
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
@@ -533,112 +391,6 @@ public class PortalStickBlockListener implements Listener
 		 if(plugin.config.DisabledWorlds.contains(loc.world))
 			 return;
 		 
-		 Region region = plugin.regionManager.getRegion(loc);
-		 
-		 //Redstone teleportation
-		 if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
-		 {			 
-			 Location l = block.getLocation();
-			 BlockFace face;
-			 Block block2;
-			 for (int i = 0; i < 5; i++)
-			 {
-				 face = BlockFace.values()[i];
-				 loc = new V10Location(new Location(l.getWorld(), l.getX() + face.getModX(), l.getY() + face.getModY(), l.getZ() + face.getModZ()));
-				 if (plugin.portalManager.insideBlocks.containsKey(loc)) 
-					 {
-					 	Portal portal = plugin.portalManager.insideBlocks.get(loc);
-					 	if (!portal.open) continue;
-					 
-					 	Portal destination = portal.getDestination();
-					 	if (destination == null || destination.transmitter) continue;
-					 	
-					 	Material mat1, mat2;
-					 	if (event.getNewCurrent() > 0)
-					 	{
-					 		portal.transmitter = true;
-					 		mat1 = Material.REDSTONE_TORCH;
-					 		mat2 = Material.AIR;
-					 	}
-					 	else
-					 	{
-					 		portal.transmitter = false;
-					 		mat1 = Material.AIR;
-					 		mat2 = Material.REDSTONE_TORCH;
-					 	}
-					 	for (V10Location b: destination.inside)
-					 	{
-					 	  if(b != null)
-					 	  {
-					 		block2 = b.getHandle().getBlock();
-					 		if(block2.getType() == mat2)
-				 			block2.setType(mat1);
-					 	  }
-					 	}
-					 }
-			 }	 
-		 }
-		 
-		 //Turning off grills
-		 if (region.getBoolean(RegionSetting.ENABLE_GRILL_REDSTONE_DISABLING)) 
-		 {
-			 
-			 Grill grill = null;
-			 for (int i = 0; i < 5; i++)
-			 { 
-				grill = plugin.grillManager.borderBlocks.get(new V10Location(block.getRelative(BlockFace.values()[i])));
-				if (grill != null)
-				{
-				  if (event.getNewCurrent() > 0)
-					grill.disable();
-				  else
-				    grill.enable();
-				}
-			 }
-		 }
-		 
-		 //Turning off bridges or reversing funnels
-		 if (region.getBoolean(RegionSetting.ENABLE_BRIDGE_REDSTONE_DISABLING) && block.getType() != Material.REDSTONE_TORCH)
-		 {
-			 Bridge bridge = null;
-			 boolean cblock = false;
-			 for (int i = 0; i < 5; i++)
-			 {
-				 bridge = plugin.funnelBridgeManager.bridgeMachineBlocks.get(new V10Location(block.getRelative(BlockFace.values()[i])));
-				 if (bridge != null) 
-				 {
-					 cblock = new V10Location(block.getRelative(BlockFace.values()[i])).equals(bridge.creationBlock);
-					 break;
-				 }
-			 }
-			 
-			 if (bridge != null)
-			 {
-				 if (bridge instanceof Funnel && cblock)
-				 {
-					((Funnel) bridge).setReverse(event.getNewCurrent() > 0); 
-				 }
-				 else
-				 {
-					 if (event.getNewCurrent() > 0)
-						 bridge.deactivate();
-				     else
-				    	 bridge.activate(); 
-				 }
-			 }
-		 }
-		 
-		 //Portal Generators
-		 if (event.getOldCurrent()  == 0 && event.getNewCurrent() > 0)
-		 {
-			 Block block2;
-			 for (int i = 0; i < 5; i++)
-			 {
-				 block2 = block.getRelative(BlockFace.values()[i]);
-				 if (Tag.WOOL.isTagged(block2.getType()))
-					 plugin.portalManager.tryPlacingAutomatedPortal(block2);
-			 }
-		 }
 	 }
 	 
 //	@EventHandler(ignoreCancelled = true)

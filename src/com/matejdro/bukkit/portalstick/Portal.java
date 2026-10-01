@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
 import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
@@ -26,11 +25,9 @@ public class Portal {
 	public final boolean orange;
 	public boolean open = false;
 	boolean disabled = false;
-	public boolean transmitter = false;
 	public final BlockFace teleportFace;
 	private final HashSet<V10Location> awayBlocks;
 	final V10Location[] awayBlocksY = new V10Location[2];
-	private boolean placetorch = false;
 	
 	public Portal(PortalStick plugin, V10Location[] teleport, V10Location CenterBlock, HashSet<V10Location> Border, V10Location[] inside, V10Location[] behind, User Owner, boolean Orange, boolean horizontal, BlockFace Teleportface)
 	{
@@ -59,8 +56,6 @@ public class Portal {
 			{
 				bh = plugin.portalManager.oldBlocks.get(loc);
 				bh.reset();
-				if(plugin.gelManager.gelMap.containsKey(bh))
-					plugin.gelManager.removeGel(bh);
 				plugin.portalManager.oldBlocks.remove(loc);
 			}
 			plugin.portalManager.borderBlocks.remove(loc);
@@ -73,8 +68,6 @@ public class Portal {
 			{
 				bh = plugin.portalManager.oldBlocks.get(loc);
 				bh.reset();
-				if(plugin.gelManager.gelMap.containsKey(bh))
-					plugin.gelManager.removeGel(bh);
 				plugin.portalManager.oldBlocks.remove(loc);
 			}
 		  plugin.portalManager.insideBlocks.remove(loc);
@@ -87,8 +80,6 @@ public class Portal {
 				{
 					bh = plugin.portalManager.oldBlocks.get(loc);
 					bh.reset();
-					if(plugin.gelManager.gelMap.containsKey(bh))
-						plugin.gelManager.removeGel(bh);
 					plugin.portalManager.oldBlocks.remove(loc);
 				}
 				plugin.portalManager.behindBlocks.remove(loc);
@@ -112,16 +103,13 @@ public class Portal {
 		open = false;
 				
 		plugin.portalManager.portals.remove(this);
-		plugin.regionManager.getRegion(centerBlock).portals.remove(this);	
 		
-    	plugin.regionManager.getRegion(centerBlock).portalDeleted(this, oldDestination);
 		if (oldDestination != null && oldDestination.getDestination() == null) oldDestination.close();
 
    	}
 	
 	public void open()
 	{
-		Region region = plugin.regionManager.getRegion(inside[0]);
 		
 		Block b;
 //		BlockHolder bh;
@@ -137,37 +125,11 @@ public class Portal {
 			EndGateway endGateway = (EndGateway)b.getState(false);
 			endGateway.setAge(Long.MIN_VALUE);
 
-			if (region.getBoolean(RegionSetting.ENABLE_REDSTONE_TRANSFER))
-			 {			 				 
-				 for (int i = 0; i < 4; i++)
-				 {
-					 BlockFace face = BlockFace.values()[i];
-					 if (b.getRelative(face).getBlockPower() > 0) 
-						 {						 
-						 	Portal destination = getDestination();
-						 	if (destination == null || destination.transmitter) continue;
-						 
-						 		transmitter = true;
-						 		if (destination.open)
-							 		for (V10Location b2: destination.inside)
-							 		  if(b2 != null)
-							 			b2.getHandle().getBlock().setType(Material.REDSTONE_TORCH, false);
-						 		else
-						 			destination.placetorch = true;
-						 }
-				 }
-			 }
 
     	}
 		
-		if (placetorch)
-		{
-			inside[0].getHandle().getBlock().setType(Material.REDSTONE_TORCH, false);
-			placetorch = false;
-		}
 		
 		open = true;
-		plugin.funnelBridgeManager.reorientBridge(this);
 	}
 	
 	public void close()
@@ -186,7 +148,6 @@ public class Portal {
 		  }
     	}
 		
-		plugin.funnelBridgeManager.reorientBridge(this);
 	}
 	
 	public void recreate()
@@ -229,11 +190,6 @@ public class Portal {
     		
     		rb = loc.getHandle().getBlock();
     		bh = new BlockHolder(rb);
-    		if(plugin.gelManager.gelMap.containsKey(bh))
-    		{
-    		  bh = plugin.gelManager.gelMap.get(bh);
-    		  plugin.gelManager.removeGel(bh);
-    		}
     		plugin.portalManager.oldBlocks.put(loc, bh);
     		rb.setType(plugin.util.getPortalColorMaterial(color), false);
     		plugin.portalManager.borderBlocks.put(loc, this);
@@ -244,11 +200,6 @@ public class Portal {
     	  {
     		rb = loc.getHandle().getBlock();
     		bh = new BlockHolder(rb);
-    		if(plugin.gelManager.gelMap.containsKey(bh))
-    		{
-      		  bh = plugin.gelManager.gelMap.get(bh);
-      		  plugin.gelManager.removeGel(bh);
-    		}
     		plugin.portalManager.oldBlocks.put(loc, bh);
     	  }
     	}
@@ -263,11 +214,6 @@ public class Portal {
 
         		rb = loc.getHandle().getBlock();
         		bh = new BlockHolder(rb);
-        		if(plugin.gelManager.gelMap.containsKey(bh))
-        		{
-          		  bh = plugin.gelManager.gelMap.get(bh);
-          		  plugin.gelManager.removeGel(bh);
-        		}
         		plugin.portalManager.oldBlocks.put(loc, bh);
         		if (plugin.config.CompactPortal)
         		{
@@ -329,36 +275,24 @@ public class Portal {
     	  }
     	}
     	
-    	plugin.regionManager.getRegion(centerBlock).portalCreated(this);
 	}
 	
 	public Portal getDestination()
 	{
-		Region region = plugin.regionManager.getRegion(centerBlock);
 		
 		if (orange)
 		{
-			if (owner.bluePortal != null) 
+			if (owner.bluePortal != null)
 				return owner.bluePortal;
-			else if (!isRegionPortal())
-				return region.bluePortal;
-			else
-				return region.orangeDestination;
+			return null; // AI edit: portal-gun-only cleanup
 		}
 		else
 		{
-			if (owner.orangePortal != null) 
+			if (owner.orangePortal != null)
 				return owner.orangePortal;
-			else if (!isRegionPortal())
-				return region.orangePortal;
-			else
-				return region.blueDestination;
+			return null; // AI edit: portal-gun-only cleanup
 
 		}
 	}
 	
-	public boolean isRegionPortal()
-	{
-		return owner.name.startsWith("§region§_");
-	}
 }

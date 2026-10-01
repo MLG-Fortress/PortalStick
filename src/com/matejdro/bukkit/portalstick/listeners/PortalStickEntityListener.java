@@ -25,14 +25,10 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import com.matejdro.bukkit.portalstick.Grill;
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
-import com.matejdro.bukkit.portalstick.Region;
-import com.matejdro.bukkit.portalstick.User;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
-import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
 
 public class PortalStickEntityListener implements Listener {
@@ -43,31 +39,6 @@ public class PortalStickEntityListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-//	@EventHandler(ignoreCancelled = true)
-//	public void onEntityDamage(EntityDamageEvent event) {
-//		if(plugin.config.DisabledWorlds.contains(event.getEntity().getLocation().getWorld().getName()))
-//		  return;
-//
-//		if (event.getEntity() instanceof Player)
-//		{
-//			Player player = (Player)event.getEntity();
-//			if (!plugin.hasPermission(player, plugin.PERM_DAMAGE_BOOTS))
-//			  return;
-//			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-//			ItemStack is = player.getInventory().getBoots();
-//			if (event.getCause() == DamageCause.FALL && region.getBoolean(RegionSetting.ENABLE_FALL_DAMAGE_BOOTS))
-//			{
-//			  boolean ok;
-//			  if(is == null)
-//				ok = false;
-//			  else
-//				ok = region.getInt(RegionSetting.FALL_DAMAGE_BOOTS) == is.getTypeId();
-//			  if(ok)
-//				event.setCancelled(true);
-//			}
-//		}
-//	}
-
 	@EventHandler(ignoreCancelled = true)
 	public void onHangingEntityBreak(HangingBreakEvent event)
 	{
@@ -116,7 +87,6 @@ public class PortalStickEntityListener implements Listener {
 	{
 		if(plugin.config.DisabledWorlds.contains(event.getLocation().getWorld().getName()))
 		  return;
-		Region region = plugin.regionManager.getRegion(new V10Location(event.getLocation()));
 		Iterator<Block> iter = event.blockList().iterator();
 		Block block;
 		V10Location loc;
@@ -134,7 +104,7 @@ public class PortalStickEntityListener implements Listener {
 				  portal = plugin.portalManager.behindBlocks.get(loc);
 				if (portal != null)
 				{
-					if (region.getBoolean(RegionSetting.PROTECT_PORTALS_FROM_TNT))
+					if (plugin.config.getGlobalBoolean(RegionSetting.PROTECT_PORTALS_FROM_TNT)) // AI edit: portal-gun-only cleanup
 					  iter.remove();
 					else
 					{
@@ -143,16 +113,6 @@ public class PortalStickEntityListener implements Listener {
 					}
 				}
 			}
-//			else if (plugin.blockUtil.compareBlockToString(block, region.getString(RegionSetting.GRILL_MATERIAL)))
-//			{
-//				Grill grill = plugin.grillManager.insideBlocks.get(loc);
-//				if (grill == null) grill = plugin.grillManager.borderBlocks.get(loc);
-//				if (grill != null )
-//				{
-//					event.setCancelled(true);
-//					return;
-//				}
-//			} //RoboMWM: I don't care about grills (xddddd)
 		}
 	}
 }

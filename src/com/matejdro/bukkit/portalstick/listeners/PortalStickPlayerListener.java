@@ -29,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
-import com.matejdro.bukkit.portalstick.Region;
 import com.matejdro.bukkit.portalstick.User;
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
@@ -127,19 +126,9 @@ public class PortalStickPlayerListener implements Listener {
 			}
 
 			event.setCancelled(true);
-			Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-//			HashSet<String> tb = new HashSet<>();
-//			try
-//			{
-//				//tb.addAll(Arrays.asList(region.getList(RegionSetting.TRANSPARENT_BLOCKS).toArray(new String[0])));
-//			}
-//			catch (ArrayStoreException e)
-//            {
-//			    e.printStackTrace();
-//            }
+	
 
-
-			if (!region.getBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL))
+			if (!plugin.config.getGlobalBoolean(RegionSetting.ENABLE_PORTALS) || !plugin.hasPermission(player, plugin.PERM_PLACE_PORTAL)) // AI edit: portal-gun-only cleanup
 				return;
 
 			//Convert strings to materials
@@ -163,7 +152,7 @@ public class PortalStickPlayerListener implements Listener {
 				orange = true;
 
 			V10Location loc;
-			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_THROUGH_PORTAL))
+			if (plugin.config.getGlobalBoolean(RegionSetting.PREVENT_PORTAL_THROUGH_PORTAL)) // AI edit: portal-gun-only cleanup
 			{
 				List<Block> goodBlocks = new ArrayList<>(targetBlocks.size());
 				for (Block b : targetBlocks)
@@ -184,26 +173,6 @@ public class PortalStickPlayerListener implements Listener {
 				}
 			}
 
-//			if (region.getBoolean(RegionSetting.PREVENT_PORTAL_CLOSED_DOOR))
-//			{
-//				for (Block b : targetBlocks)
-//				{
-//					if ((b.getType() == Material.IRON_DOOR_BLOCK || b.getType() == Material.WOODEN_DOOR) && ((b.getData() & 4) != 4) )
-//					{
-//						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-//						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
-//						return;
-//					}
-//					else if (b.getType() == Material.TRAP_DOOR && (b.getData() & 4) == 0)
-//					{
-//						plugin.util.sendMessage(player, plugin.i18n.getString("CannotPlacePortal", player.getName()));
-//						plugin.util.playSound(Sound.PORTAL_CANNOT_CREATE, new V10Location(b));
-//						return;
-//
-//					}
-//				}
-//			}
-
 			fireGunShootEvent(player, targetBlocks, event.getAction(), orange);
 
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR || transparentMaterials.contains(event.getClickedBlock().getType()))
@@ -222,26 +191,6 @@ public class PortalStickPlayerListener implements Listener {
 			else
 				plugin.portalManager.placePortal(new V10Location(event.getClickedBlock()), event.getBlockFace(), event.getPlayer(), orange, true);
 		}
-		//Region tool
-//		else if (user.usingTool && itemInHand.getTypeId() == plugin.config.RegionTool)
-//		{
-//			switch (event.getAction()) {
-//				case RIGHT_CLICK_BLOCK:
-//					user.pointTwo = new V10Location(event.getClickedBlock());
-//					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
-//					break;
-//				case LEFT_CLICK_BLOCK:
-//					user.pointOne = new V10Location(event.getClickedBlock());
-//					plugin.util.sendMessage(player, plugin.i18n.getString("RegionPointTwoSet", player.getName()));
-//			}
-//		}
-		//Flint and steel
-//		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getItemInHand().getType() == Material.FLINT_AND_STEEL)
-//		{
-//			V10Location loc = new V10Location(event.getClickedBlock());
-//			if (plugin.grillManager.createGrill(player, loc) || plugin.funnelBridgeManager.placeGlassBridge(player, loc))
-//				event.setCancelled(true);
-//		}
 		//Color changing
 		else if (mainHand && event.getAction() == Action.RIGHT_CLICK_BLOCK && itemInHand.getType() == Material.AIR && Tag.WOOL.isTagged(event.getClickedBlock().getType()))
 		{
@@ -299,96 +248,4 @@ public class PortalStickPlayerListener implements Listener {
 		plugin.userManager.deleteUser(event.getPlayer());
 	}
 	
-//	@EventHandler()
-//	public void noPickup(PlayerPickupItemEvent event)
-//	{
-//	  Item item = event.getItem();
-//	  if(plugin.config.DisabledWorlds.contains(item.getWorld().getName()))
-//		return;
-//	  V10Location iloc = new V10Location(item.getLocation());
-//	  Region region = plugin.regionManager.getRegion(iloc);
-//	  Player player = event.getPlayer();
-//	  User user = plugin.userManager.getUser(player);
-//	  if(!region.getBoolean(RegionSetting.GRILLS_REMOVE_ITEMS) || user.usingTool)
-//		return;
-//	  ItemStack is = item.getItemStack();
-//	  int id;
-//	  for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
-//	  {
-//		id = (Integer)iss;
-//		if(is.getTypeId() == id)
-//		  return;
-//	  }
-//	  V10Location ploc = new V10Location(player.getLocation());
-//	  int a, b;
-//	  boolean x;
-//	  if(ploc.x != iloc.x)
-//	  {
-//		a = ploc.x;
-//		b = iloc.x;
-//		x = true;
-//	  }
-//	  else if(ploc.z != iloc.z)
-//	  {
-//		a = ploc.z;
-//		b = iloc.z;
-//		x = false;
-//	  }
-//	  else
-//		return;
-//	  if(a > b)
-//	  {
-//		int tmp = a;
-//		a = b;
-//		b = tmp;
-//	  }
-//	  for(; a < b; a++)
-//	  {
-//		if(x)
-//		  iloc = new V10Location(iloc.world, a, iloc.y, iloc.z);
-//		else
-//		  iloc = new V10Location(iloc.world, iloc.x, iloc.y, a);
-//	    if(plugin.grillManager.insideBlocks.containsKey(iloc))
-//	    {
-//	      if(plugin.grillManager.insideBlocks.get(iloc).disabled)
-//	    	continue;
-//	      event.setCancelled(true);
-//	      item.remove();
-//	      Location el = item.getLocation();
-//	      if(x)
-//		    el.setX(a);
-//	      else
-//	    	el.setZ(a);
-//	      plugin.grillManager.playGrillAnimation(el);
-//	      return;
-//	    }
-//	  }
-//	}
-	
-//	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-//	public void trackDrops(PlayerDropItemEvent event)
-//	{
-//	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))
-//		return;
-//	  Player player = event.getPlayer();
-//	  Region region = plugin.regionManager.getRegion(new V10Location(player.getLocation()));
-//
-//	  if(!region.getBoolean(RegionSetting.GRILLS_CLEAR_ITEM_DROPS))
-//		return;
-//
-//	  Item item = event.getItemDrop();
-//	  ItemStack is = item.getItemStack();
-//
-//	  if(!region.getBoolean(RegionSetting.GRILL_GIVE_GUN_IF_NEEDED))
-//	  {
-//		int id;
-//		for(Object iss: region.getList(RegionSetting.GRILL_REMOVE_EXCEPTIONS))
-//		{
-//		  id = (Integer)iss;
-//		  if(is.getTypeId() == id)
-//			return;
-//		}
-//	  }
-//	  plugin.userManager.getUser(player).droppedItems.add(item);
-//	}
 }

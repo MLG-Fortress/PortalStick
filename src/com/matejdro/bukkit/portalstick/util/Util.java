@@ -77,7 +77,7 @@ public class Util {
     
     public void playSound(Sound sound, V10Location loc)
 	{
-		if (!plugin.regionManager.getRegion(loc).getBoolean(RegionSetting.ENABLE_SOUNDS))
+		if (!plugin.config.getGlobalBoolean(RegionSetting.ENABLE_SOUNDS)) // AI edit: portal-gun-only cleanup
 			return;
 
 		if (plugin.config.useNativeSounds)
@@ -136,25 +136,4 @@ public class Util {
     	return Integer.parseInt(plugin.config.ColorPresets.get(preset).split("-")[1]);
     }
     
-    public ItemStack getItemData(String itemString)
-    {
-    	return null;
-//    	int num;
-//    	int id;
-//    	short data;
-//
-//    	String[] split = itemString.split(",");
-//    	if (split.length < 2)
-//    		num = 1;
-//    	else
-//    		num = Integer.parseInt(split[1]);
-//    	split = split[0].split(":");
-//    	if (split.length < 2)
-//    		data = 0;
-//    	else
-//    		data = Short.parseShort(split[1]);
-//
-//    	id = Integer.parseInt(split[0]);
-//    	return new ItemStack(id, num, data);
-    }
 }
