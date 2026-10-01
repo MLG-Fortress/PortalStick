@@ -2,16 +2,14 @@ package com.matejdro.bukkit.portalstick;
 
 import java.util.HashSet;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-
-
-import de.V10lator.PortalStick.BlockHolder;
-import de.V10lator.PortalStick.V10Location;
-import org.bukkit.block.EndGateway;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+
+
+import de.V10lator.PortalStick.V10Location;
 
 public class Portal {
 	private final PortalStick plugin;
@@ -46,45 +44,114 @@ public class Portal {
 		else
 		  awayBlocks = null;
 	}
+
+	// AI edit: fake-portal-visuals - begin
+	// Real blocks stay untouched, portal is client-side overlay via sendBlockChange.
+	// Send one fake block to one player (skips other worlds).
+	private void sendTo(Player player, V10Location loc, Material material)
+	{
+		if (player == null || loc == null || material == null)
+			return;
+		Location handle = loc.getHandle();
+		if (handle == null || handle.getWorld() == null || !player.getWorld().equals(handle.getWorld()))
+			return;
+		player.sendBlockChange(handle, material.createBlockData());
+	}
+
+	// Restore client view to real block for everyone (undoes fake).
+	private void resetToAll(V10Location loc)
+	{
+		if (loc == null)
+			return;
+		Location handle = loc.getHandle();
+		if (handle == null || handle.getWorld() == null)
+			return;
+		BlockData real = handle.getBlock().getBlockData();
+		for (Player player : plugin.getServer().getOnlinePlayers())
+		{
+			if (!player.getWorld().equals(handle.getWorld()))
+				continue;
+			player.sendBlockChange(handle, real);
+		}
+	}
+
+	// Full portal overlay for one player (used on join / chunk change).
+	public void showTo(Player player)
+	{
+		int color = orange ? plugin.util.getRightPortalColor(owner.colorPreset) : plugin.util.getLeftPortalColor(owner.colorPreset);
+		Material borderMaterial = plugin.util.getPortalColorMaterial(color);
+		for (V10Location loc : border)
+			sendTo(player, loc, borderMaterial);
+		if (plugin.config.FillPortalBack != Material.AIR)
+		{
+			for (V10Location loc : behind)
+			{
+				if (loc == null)
+					continue;
+				if (plugin.config.CompactPortal)
+					sendTo(player, loc, borderMaterial);
+				else
+					sendTo(player, loc, plugin.config.FillPortalBack);
+			}
+		}
+		for (V10Location loc : inside)
+		{
+			if (loc == null)
+				continue;
+			if (open)
+				sendTo(player, loc, Material.END_GATEWAY);
+			else
+				sendTo(player, loc, borderMaterial);
+		}
+	}
+
+	// Full portal overlay for everyone.
+	public void showToAll()
+	{
+		for (Player player : plugin.getServer().getOnlinePlayers())
+			showTo(player);
+	}
+
+	// Clear overlay for everyone, real blocks were never changed.
+	private void hideFromAll()
+	{
+		for (V10Location loc : border)
+			resetToAll(loc);
+		for (V10Location loc : inside)
+			resetToAll(loc);
+		if (plugin.config.FillPortalBack != Material.AIR)
+		{
+			for (V10Location loc : behind)
+				resetToAll(loc);
+		}
+	}
+	// AI edit: fake-portal-visuals - end
 	
 	public void delete()
 	{
-		BlockHolder bh;
+		// AI edit: fake-portal-visuals - begin
+		// No BlockHolder restore, just unregister maps and reset client views.
 		for (V10Location loc: border)
 		{
-			if (plugin.portalManager.oldBlocks.containsKey(loc))
-			{
-				bh = plugin.portalManager.oldBlocks.get(loc);
-				bh.reset();
-				plugin.portalManager.oldBlocks.remove(loc);
-			}
 			plugin.portalManager.borderBlocks.remove(loc);
 		}
 		for (V10Location loc: inside)
 		{
 		  if(loc == null)
 			continue;
-		  if (plugin.portalManager.oldBlocks.containsKey(loc))
-			{
-				bh = plugin.portalManager.oldBlocks.get(loc);
-				bh.reset();
-				plugin.portalManager.oldBlocks.remove(loc);
-			}
 		  plugin.portalManager.insideBlocks.remove(loc);
 		}
 		if (plugin.config.FillPortalBack != Material.AIR)
 		{
 			for (V10Location loc: behind)
 			{
-				if (plugin.portalManager.oldBlocks.containsKey(loc))
-				{
-					bh = plugin.portalManager.oldBlocks.get(loc);
-					bh.reset();
-					plugin.portalManager.oldBlocks.remove(loc);
-				}
+				if (loc == null)
+					continue;
 				plugin.portalManager.behindBlocks.remove(loc);
 			}
 		}
+		hideFromAll();
+		// AI edit: fake-portal-visuals - end
 		if(horizontal)
 		{
 		  for(V10Location l: awayBlocks)
@@ -106,81 +173,33 @@ public class Portal {
 		
 		if (oldDestination != null && oldDestination.getDestination() == null) oldDestination.close();
 
-   	}
+    	}
 	
+	// AI edit: fake-portal-visuals - begin
+	// Flip flag then push overlay, no setType. Closed portal shows wool in inside slots.
 	public void open()
 	{
-		
-		Block b;
-//		BlockHolder bh;
-		for (V10Location loc: inside)
-    	{
-		  if(loc == null)
-			continue;
-			b = loc.getHandle().getBlock();
-//			bh = new BlockHolder(b);
-//			if(plugin.gelManager.gelMap.containsKey(bh))
-//			  plugin.gelManager.removeGel(bh);
-			b.setType(Material.END_GATEWAY, false);
-			EndGateway endGateway = (EndGateway)b.getState(false);
-			endGateway.setAge(Long.MIN_VALUE);
-
-
-    	}
-		
-		
 		open = true;
+		showToAll();
 	}
 	
 	public void close()
 	{
-		byte color;
-		if (orange)
-			color = (byte) plugin.util.getRightPortalColor(owner.colorPreset);
-		else
-			color = (byte) plugin.util.getLeftPortalColor(owner.colorPreset);
-		for (V10Location b: inside)
-    	{
-		  if(b != null)
-		  {
-    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
-    		open = false;
-		  }
-    	}
-		
+		open = false;
+		showToAll();
 	}
 	
 	public void recreate()
 	{
-		byte color;
-		if (orange)
-			color = (byte) plugin.util.getRightPortalColor(owner.colorPreset);
-		else
-			color = (byte) plugin.util.getLeftPortalColor(owner.colorPreset);			
-		
-		for (V10Location b: border)
-    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
-
-		if (!open)
-			for (V10Location b: inside)
-			  if(b != null)
-	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
-		
-		if (plugin.config.CompactPortal)
-			for (V10Location b: behind)
-	    		b.getHandle().getBlock().setType(plugin.util.getPortalColorMaterial(color), false);
+		// Color preset changed, just resend overlay.
+		showToAll();
 	}
+	// AI edit: fake-portal-visuals - end
 	
 	public void create()
 	{
-		byte color;
-		if (orange)
-			color = (byte) plugin.util.getRightPortalColor(owner.colorPreset);
-		else
-			color = (byte) plugin.util.getLeftPortalColor(owner.colorPreset);			
-
-		Block rb;
-		BlockHolder bh;
+		// AI edit: fake-portal-visuals - begin
+		// Only register maps, never touch real blocks (no BlockHolder/oldBlocks).
     	for (V10Location loc: border)
     	{
     		if (plugin.portalManager.insideBlocks.containsKey(loc))
@@ -188,44 +207,30 @@ public class Portal {
     		if (plugin.portalManager.behindBlocks.containsKey(loc))
     			plugin.portalManager.behindBlocks.get(loc).delete();
     		
-    		rb = loc.getHandle().getBlock();
-    		bh = new BlockHolder(rb);
-    		plugin.portalManager.oldBlocks.put(loc, bh);
-    		rb.setType(plugin.util.getPortalColorMaterial(color), false);
     		plugin.portalManager.borderBlocks.put(loc, this);
        	}
     	for (V10Location loc: inside)
     	{
     	  if(loc != null)
     	  {
-    		rb = loc.getHandle().getBlock();
-    		bh = new BlockHolder(rb);
-    		plugin.portalManager.oldBlocks.put(loc, bh);
+    		plugin.portalManager.insideBlocks.put(loc, this);
     	  }
     	}
     	if (plugin.config.FillPortalBack != Material.AIR)
     	{
     		for (V10Location loc: behind)
         	{
+    			if (loc == null)
+    				continue;
         		if (plugin.portalManager.borderBlocks.containsKey(loc))
         			plugin.portalManager.borderBlocks.get(loc).delete();
         		if (plugin.portalManager.insideBlocks.containsKey(loc))
         			plugin.portalManager.insideBlocks.get(loc).delete();
 
-        		rb = loc.getHandle().getBlock();
-        		bh = new BlockHolder(rb);
-        		plugin.portalManager.oldBlocks.put(loc, bh);
-        		if (plugin.config.CompactPortal)
-        		{
-        			rb.setType(plugin.util.getPortalColorMaterial(color), false);
-        		}
-        		else
-        		{
-        			rb.setType(plugin.config.FillPortalBack, false);
-        		}
         		plugin.portalManager.behindBlocks.put(loc, this);
         	}
     	}
+		// AI edit: fake-portal-visuals - end
 
 		V10Location oloc;
 		V10Location loc;

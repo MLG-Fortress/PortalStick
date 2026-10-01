@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.matejdro.bukkit.portalstick.Portal;
@@ -231,15 +232,38 @@ public class PortalStickPlayerListener implements Listener {
 	{
 	  if(plugin.config.DisabledWorlds.contains(event.getPlayer().getLocation().getWorld().getName()))
 		return;
-	  Location to = plugin.entityManager.onEntityMove(event.getPlayer(), event.getFrom(), event.getTo(), false);
-	  if(to != null)
-		event.setTo(to);
+	  // AI edit: fake-portal-visuals - begin
+	  // Client drops fake blocks on chunk resend, push overlay again.
+	  Location from = event.getFrom();
+	  Location to = event.getTo();
+	  if (to != null && (from.getWorld() != to.getWorld() || from.getChunk() != to.getChunk()))
+		for (Portal portal : plugin.portalManager.portals)
+			portal.showTo(event.getPlayer());
+	  Location teleport = plugin.entityManager.onEntityMove(event.getPlayer(), event.getFrom(), event.getTo(), false);
+	  if(teleport != null)
+		event.setTo(teleport);
+	  // AI edit: fake-portal-visuals - end
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	void onPlayerJoin(PlayerJoinEvent event)
 	{
 		plugin.userManager.createUser(event.getPlayer());
+		// AI edit: fake-portal-visuals - begin
+		// Joining player missed earlier sendBlockChange calls.
+		for (Portal portal : plugin.portalManager.portals)
+			portal.showTo(event.getPlayer());
+		// AI edit: fake-portal-visuals - end
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	void onPlayerTeleport(PlayerTeleportEvent event)
+	{
+		// AI edit: fake-portal-visuals - begin
+		// Teleport resends chunks, overlay must follow; delay one tick so client has chunks.
+		final Player player = event.getPlayer();
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){public void run(){for (Portal portal : plugin.portalManager.portals) portal.showTo(player);}}, 1L);
+		// AI edit: fake-portal-visuals - end
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

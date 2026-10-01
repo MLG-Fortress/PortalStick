@@ -32,7 +32,6 @@ import com.matejdro.bukkit.portalstick.Portal;
 import com.matejdro.bukkit.portalstick.PortalStick;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
-import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
 
 public class PortalStickBlockListener implements Listener
@@ -79,12 +78,15 @@ public class PortalStickBlockListener implements Listener
 		if(portal.open)
 		  return;
 	  }
+	  // AI edit: fake-portal-visuals - begin
+	  // Event block is real wall under fake overlay; delete clears overlay for everyone.
 	  if (portal != null)
 	  {
 		portal.delete();
 		event.setCancelled(true);
 		return;
 	  }
+	  // AI edit: fake-portal-visuals - end
 	  
 	}
 	

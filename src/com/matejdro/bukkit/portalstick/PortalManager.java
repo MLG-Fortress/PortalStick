@@ -29,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import com.matejdro.bukkit.portalstick.util.Config.Sound;
 import com.matejdro.bukkit.portalstick.util.RegionSetting;
 
-import de.V10lator.PortalStick.BlockHolder;
 import de.V10lator.PortalStick.V10Location;
 
 public class PortalManager {
@@ -62,7 +61,7 @@ public class PortalManager {
 	public final HashMap<V10Location, Portal> insideBlocks = new HashMap<V10Location, Portal>();
 	final HashMap<V10Location, Portal> awayBlocks = new HashMap<V10Location, Portal>();
 	final HashMap<V10Location, Portal> awayBlocksY = new HashMap<V10Location, Portal>();
-	public final HashMap<V10Location, BlockHolder> oldBlocks = new HashMap<V10Location, BlockHolder>();
+	// AI edit: fake-portal-visuals - oldBlocks removed, real blocks never changed so nothing to restore.
 	private Set<Material> nonPortalableMaterials = new HashSet<>();
 
 	
