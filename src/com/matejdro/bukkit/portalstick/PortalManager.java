@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.bukkit.Warning;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -408,44 +407,5 @@ public class PortalManager {
 		return true;
 		
 	}
-
-	@Deprecated
-	@Warning(reason = "Does not perform any checks")
-	public void placePortal(V10Location block, Player player, boolean orange)
-	{
-		
-		float dir = (float)Math.toDegrees(Math.atan2(player.getLocation().getBlockX() - block.x, block.z - player.getLocation().getBlockZ()));
-		dir = dir % 360;
-	    if(dir < 0)
-	    	dir += 360;
-	    
-		//Try WEST/EAST
-		if (dir < 90 || dir > 270)
-		{
-			if (placePortal(block, BlockFace.EAST, player, orange, false))
-			  return;
-		}
-		else if (placePortal(block, BlockFace.WEST, player, orange, false))
-		  return;
-		
-		//Try NORTH/SOUTH
-		if (dir < 180) 
-		{
-			if (placePortal(block, BlockFace.SOUTH, player, orange, false))
-			  return;
-		}
-		else if (placePortal(block, BlockFace.NORTH, player, orange, false))
-		  return;
-		
-		//Try UP/DOWN
-		if (player.getEyeLocation().getY() >= block.y )
-		{
-			if (placePortal(block, BlockFace.UP, player, orange, false))
-			  return;
-		}
-		else if (placePortal(block, BlockFace.DOWN, player, orange, true))
-		  return;
-	
-	 }
 
 }

@@ -2,11 +2,8 @@ package com.matejdro.bukkit.portalstick.util;
 
 import java.util.HashMap;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.material.Directional;
-import org.bukkit.material.MaterialData;
 
 import de.V10lator.PortalStick.V10Location;
 
@@ -58,24 +55,4 @@ public class BlockUtil {
 		}
 		return null;
 	}
-	
-	public Byte rotateBlock(Material block, Byte bdata, BlockFace origin, BlockFace newOrientation)
-	{
-		if (block.getNewData(bdata) instanceof Directional)
-		{
-			Directional directional = (Directional) block.getNewData(bdata);
-			
-			int diff = newOrientation.ordinal() - origin.ordinal();
-			
-			if (directional.getFacing().ordinal() + diff < 0) diff += 4;
-			if (directional.getFacing().ordinal() + diff > 3) diff -= 4;
-			
-			directional.setFacingDirection(BlockFace.values()[directional.getFacing().ordinal() + diff]);
-			return ((MaterialData) directional).getData();
-		}
-		else
-			return bdata;
-		
-	}
-
 }
